@@ -1,0 +1,8 @@
+{
+  "name": "foreman-os",
+  "version": "4.1.0",
+  "description": "Complete construction superintendent operating system — daily reporting, 3-week look-ahead planning, RFI/submittal management, weekly owner reports, material & procurement tracking, interactive dashboards, project closeout & commissioning, and deep document intelligence. v4.1 adds DWG Extraction skill: compiles libredwg from source, converts AutoCAD DWG files (including Civil 3D) to DXF, and parses all entity types (survey points, utility structures, contours, property boundaries, construction keynotes, grading data) into structured project intelligence. Also adds /process-dwg command. Now includes 42 skills, 37 commands, 21 field-reference documents, and an optional image generation MCP server. All powered by a unified project intelligence layer extracted from your plans, specs, schedules, contracts, and CAD drawings.",
+  "author": {
+    "name": "Miles Goodman"
+  }
+}

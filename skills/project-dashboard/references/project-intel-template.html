@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foreman OS — Project Intelligence Dashboard</title>
+<style>
+:root {
+  --navy: #1B2A4A;
+  --blue: #2E5EAA;
+  --light-bg: #F8F9FB;
+  --section-bg: #EDF2F9;
+  --amber: #E8A838;
+  --green: #2D8F4E;
+  --red: #C0392B;
+  --text-primary: #1B2A4A;
+  --text-secondary: #666;
+  --border: #D1D5DB;
+  --white: #FFFFFF;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --hover-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--light-bg); color: var(--text-primary); line-height: 1.5; }
+
+/* HEADER */
+.header { background: var(--navy); color: white; padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+.header .subtitle { font-size: 13px; opacity: 0.7; margin-top: 2px; }
+.header-right { text-align: right; font-size: 12px; opacity: 0.7; }
+.header-badge { display: inline-block; background: var(--blue); padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 12px; }
+
+/* LAYOUT */
+.layout { display: flex; min-height: calc(100vh - 70px); }
+
+/* SIDEBAR */
+.sidebar { width: 240px; background: var(--white); border-right: 1px solid var(--border); padding: 16px 0; position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; flex-shrink: 0; }
+.sidebar-section { padding: 8px 16px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-top: 8px; }
+.sidebar a { display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 13px; color: var(--text-primary); text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
+.sidebar a:hover { background: var(--section-bg); }
+.sidebar a.active { background: var(--section-bg); border-left-color: var(--blue); color: var(--blue); font-weight: 600; }
+.sidebar a .icon { width: 18px; text-align: center; font-size: 14px; }
+.sidebar a .badge { margin-left: auto; background: var(--section-bg); padding: 1px 7px; border-radius: 10px; font-size: 11px; color: var(--text-secondary); font-weight: 600; }
+
+/* MAIN CONTENT */
+.main { flex: 1; padding: 24px 32px; max-width: calc(100vw - 240px); overflow-x: hidden; }
+.section { display: none; }
+.section.active { display: block; }
+.section-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.section-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+
+/* CARDS */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.card { background: var(--white); border-radius: 8px; border: 1px solid var(--border); padding: 16px; box-shadow: var(--card-shadow); transition: box-shadow 0.2s; }
+.card:hover { box-shadow: var(--hover-shadow); }
+.card-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 4px; }
+.card-value { font-size: 22px; font-weight: 700; color: var(--navy); }
+.card-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+/* DETAIL CARDS */
+.detail-card { background: var(--white); border-radius: 8px; border: 1px solid var(--border); padding: 20px; box-shadow: var(--card-shadow); margin-bottom: 16px; }
+.detail-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.detail-card h3 .tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin-bottom: 16px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th { background: var(--navy); color: white; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; }
+tbody td { padding: 9px 12px; border-bottom: 1px solid #EEE; vertical-align: top; }
+tbody tr:hover { background: #F5F7FA; }
+tbody tr:nth-child(even) { background: #FAFBFC; }
+tbody tr:nth-child(even):hover { background: #F0F2F5; }
+
+/* STATUS BADGES */
+.status { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
+.status-green { background: #E8F5E9; color: #1B5E20; }
+.status-amber { background: #FFF8E1; color: #E65100; }
+.status-red { background: #FFEBEE; color: #B71C1C; }
+.status-blue { background: #E3F2FD; color: #0D47A1; }
+.status-gray { background: #F5F5F5; color: #616161; }
+
+/* GRID VISUALIZATION */
+.grid-viz { display: inline-grid; gap: 0; border: 2px solid var(--navy); border-radius: 4px; padding: 2px; margin: 12px 0; }
+.grid-cell { width: 36px; height: 36px; border: 1px solid #DDD; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: var(--text-secondary); }
+.grid-header { background: var(--navy); color: white; font-size: 10px; }
+
+/* KV PAIRS */
+.kv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px 24px; }
+.kv-item { padding: 6px 0; border-bottom: 1px solid #F0F0F0; }
+.kv-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px; }
+.kv-value { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-top: 1px; }
+
+/* SEARCH */
+.search-bar { display: flex; gap: 8px; margin-bottom: 20px; }
+.search-bar input { flex: 1; padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; outline: none; }
+.search-bar input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(46,94,170,0.1); }
+.search-bar select { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: white; }
+
+/* DIVISION TAGS */
+.div-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; margin-right: 4px; margin-bottom: 4px; }
+.div-tag.structural { background: #FBE9E7; color: #BF360C; }
+.div-tag.mechanical { background: #E8EAF6; color: #283593; }
+.div-tag.electrical { background: #FFF9C4; color: #F57F17; }
+.div-tag.plumbing { background: #E0F7FA; color: #006064; }
+.div-tag.fire { background: #FCE4EC; color: #880E4F; }
+.div-tag.general { background: #F3E5F5; color: #4A148C; }
+.div-tag.civil { background: #E8F5E9; color: #1B5E20; }
+.div-tag.arch { background: #E3F2FD; color: #0D47A1; }
+
+/* EMPTY STATE */
+.empty-state { text-align: center; padding: 48px 24px; color: var(--text-secondary); }
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state h3 { font-size: 16px; color: var(--text-primary); margin-bottom: 8px; }
+.empty-state p { font-size: 13px; max-width: 400px; margin: 0 auto; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { max-width: 100vw; padding: 16px; }
+  .card-grid { grid-template-columns: 1fr 1fr; }
+  .kv-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .card-grid { grid-template-columns: 1fr; }
+  .header { padding: 16px; }
+  .header h1 { font-size: 18px; }
+}
+
+/* PRINT */
+@media print {
+  .sidebar { display: none; }
+  .header { position: static; }
+  .section { display: block !important; page-break-before: always; }
+  .section:first-child { page-break-before: avoid; }
+}
+
+/* TAB COUNTS */
+.count-pill { background: var(--blue); color: white; padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-left: 6px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Foreman OS <span class="header-badge">Project Intelligence</span></h1>
+    <div class="subtitle">All extracted data from project documents</div>
+  </div>
+  <div class="header-right">
+    <div id="header-project"></div>
+    <div id="header-date"></div>
+  </div>
+</div>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section">Overview</div>
+  <a href="#" class="active" data-section="overview"><span class="icon">📊</span> Dashboard</a>
+  <a href="#" data-section="documents"><span class="icon">📄</span> Documents Loaded</a>
+
+  <div class="sidebar-section">Site & Building</div>
+  <a href="#" data-section="gridlines"><span class="icon">📐</span> Grid Lines</a>
+  <a href="#" data-section="areas"><span class="icon">🏢</span> Building Areas</a>
+  <a href="#" data-section="rooms"><span class="icon">🚪</span> Room Schedule</a>
+  <a href="#" data-section="site"><span class="icon">🗺️</span> Site Layout</a>
+
+  <div class="sidebar-section">Specifications</div>
+  <a href="#" data-section="specs"><span class="icon">📋</span> Spec Sections</a>
+  <a href="#" data-section="materials"><span class="icon">🧱</span> Key Materials</a>
+  <a href="#" data-section="weather"><span class="icon">🌡️</span> Weather Thresholds</a>
+  <a href="#" data-section="holdpoints"><span class="icon">🛑</span> Hold Points</a>
+  <a href="#" data-section="tolerances"><span class="icon">📏</span> Tolerances</a>
+
+  <div class="sidebar-section">Schedule & Contract</div>
+  <a href="#" data-section="schedule"><span class="icon">📅</span> Schedule</a>
+  <a href="#" data-section="contract"><span class="icon">📝</span> Contract</a>
+
+  <div class="sidebar-section">People & Safety</div>
+  <a href="#" data-section="subs"><span class="icon">👷</span> Subcontractors</a>
+  <a href="#" data-section="safety"><span class="icon">⚠️</span> Safety</a>
+  <a href="#" data-section="swppp"><span class="icon">💧</span> SWPPP</a>
+  <a href="#" data-section="geotech"><span class="icon">⛏️</span> Geotechnical</a>
+
+  <div class="sidebar-section">Logs & Tracking</div>
+  <a href="#" data-section="rfis"><span class="icon">❓</span> RFI Log</a>
+  <a href="#" data-section="submittals"><span class="icon">📑</span> Submittal Log</a>
+  <a href="#" data-section="procurement"><span class="icon">📦</span> Procurement</a>
+  <a href="#" data-section="vendors"><span class="icon">🏭</span> Vendor Database</a>
+</nav>
+
+<div class="main" id="main-content">
+
+<!-- ==================== OVERVIEW ==================== -->
+<div class="section active" id="sec-overview">
+  <h2 class="section-title">Project Intelligence Overview</h2>
+  <p class="section-desc">Summary of all extracted project data — click any section in the sidebar to drill down.</p>
+  <div class="card-grid" id="overview-cards"></div>
+  <div class="detail-card">
+    <h3>Data Coverage</h3>
+    <div id="coverage-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;"></div>
+  </div>
+</div>
+
+<!-- ==================== DOCUMENTS ==================== -->
+<div class="section" id="sec-documents">
+  <h2 class="section-title">Documents Loaded</h2>
+  <p class="section-desc">Construction documents that have been processed for intelligence extraction.</p>
+  <div class="table-wrap"><table id="docs-table"><thead><tr><th>Filename</th><th>Type</th><th>Discipline</th><th>Date Loaded</th><th>Sections Extracted</th><th>Confidence</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ==================== GRID LINES ==================== -->
+<div class="section" id="sec-gridlines">
+  <h2 class="section-title">Structural Grid</h2>
+  <p class="section-desc">Column and row grid lines from structural drawings.</p>
+  <div class="detail-card" id="grid-detail"></div>
+</div>
+
+<!-- ==================== BUILDING AREAS ==================== -->
+<div class="section" id="sec-areas">
+  <h2 class="section-title">Building Areas</h2>
+  <p class="section-desc">Major building zones, wings, and areas with grid references.</p>
+  <div class="table-wrap"><table id="areas-table"><thead><tr><th>Area Name</th><th>Grid Reference</th><th>Floors</th><th>Use / Function</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ==================== ROOM SCHEDULE ==================== -->
+<div class="section" id="sec-rooms">
+  <h2 class="section-title">Room Schedule</h2>
+  <p class="section-desc">All rooms extracted from architectural plans.</p>
+  <div class="search-bar"><input type="text" id="room-search" placeholder="Search rooms..."><select id="room-floor-filter"><option value="">All Floors</option></select></div>
+  <div class="table-wrap"><table id="rooms-table"><thead><tr><th>Room #</th><th>Room Name</th><th>Floor</th><th>Building Area</th><th>Department</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ==================== SITE LAYOUT ==================== -->
+<div class="section" id="sec-site">
+  <h2 class="section-title">Site Layout</h2>
+  <p class="section-desc">Logistics plan — access, laydown, staging, equipment locations.</p>
+  <div class="detail-card" id="site-detail"></div>
+</div>
+
+<!-- ==================== SPEC SECTIONS ==================== -->
+<div class="section" id="sec-specs">
+  <h2 class="section-title">Specification Sections</h2>
+  <p class="section-desc">CSI spec sections with requirements, thresholds, testing, and hold points.</p>
+  <div class="search-bar"><input type="text" id="spec-search" placeholder="Search specs..."><select id="spec-div-filter"><option value="">All Divisions</option></select></div>
+  <div id="specs-list"></div>
+</div>
+
+<!-- ==================== KEY MATERIALS ==================== -->
+<div class="section" id="sec-materials">
+  <h2 class="section-title">Key Materials</h2>
+  <p class="section-desc">Specified materials, products, and manufacturers from project specs.</p>
+  <div class="table-wrap"><table id="materials-table"><thead><tr><th>Material</th><th>Spec Section</th><th>Specification</th><th>Manufacturer</th><th>Product</th><th>Testing Required</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ==================== WEATHER THRESHOLDS ==================== -->
+<div class="section" id="sec-weather">
+  <h2 class="section-title">Weather Thresholds</h2>
+  <p class="section-desc">Temperature, wind, and moisture limits by work type from specifications.</p>
+  <div class="table-wrap"><table id="weather-table"><thead><tr><th>Work Type</th><th>Min Temp</th><th>Max Temp</th><th>Max Wind</th><th>Moisture OK</th><th>Spec Ref</th><th>Mitigation</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ==================== HOLD POINTS ==================== -->
+<div class="section" id="sec-holdpoints">
+  <h2 class="section-title">Hold Points & Inspections</h2>
+  <p class="section-desc">Required inspection hold points before work can proceed.</p>
+  <div class="table-wrap"><table id="holdpoints-table"><thead><tr><th>Work Type</th><th>Inspection</th><th>Trigger</th><th>Inspector</th><th>Spec Ref</th><th>Notes</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ==================== TOLERANCES ==================== -->
+<div class="section" id="sec-tolerances">
+  <h2 class="section-title">Construction Tolerances</h2>
+  <p class="section-desc">Allowable tolerances by material and measurement type.</p>
+  <div class="table-wrap"><table id="tolerances-table"><thead><tr><th>Material / System</th><th>Measurement</th><th>Tolerance</th><th>Spec Reference</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ==================== SCHEDULE ==================== -->
+<div class="section" id="sec-schedule">
+  <h2 class="section-title">Project Schedule</h2>
+  <p class="section-desc">Milestones, critical path, and long-lead items.</p>
+  <div class="card-grid" id="schedule-cards"></div>
+  <div class="detail-card"><h3>Milestones</h3><div class="table-wrap"><table id="milestones-table"><thead><tr><th>Milestone</th><th>Date</th><th>Original Date</th><th>Status</th><th>Notes</th></tr></thead><tbody></tbody></table></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="detail-card"><h3>Critical Path Activities</h3><ul id="critical-path" style="list-style:none;padding:0;"></ul></div>
+    <div class="detail-card"><h3>Long-Lead Items</h3><div class="table-wrap"><table id="longlead-table"><thead><tr><th>Item</th><th>Supplier</th><th>Expected Delivery</th><th>Status</th></tr></thead><tbody></tbody></table></div></div>
+  </div>
+</div>
+
+<!-- ==================== CONTRACT ==================== -->
+<div class="section" id="sec-contract">
+  <h2 class="section-title">Contract Intelligence</h2>
+  <p class="section-desc">Key contract dates, requirements, and restrictions.</p>
+  <div class="detail-card" id="contract-detail"></div>
+</div>
+
+<!-- ==================== SUBCONTRACTORS ==================== -->
+<div class="section" id="sec-subs">
+  <h2 class="section-title">Subcontractor Directory</h2>
+  <p class="section-desc">All subcontractors with contact info, scope, and schedule dates.</p>
+  <div class="search-bar"><input type="text" id="sub-search" placeholder="Search by name, trade, or scope..."></div>
+  <div class="table-wrap"><table id="subs-table"><thead><tr><th>Company</th><th>Trade</th><th>Scope</th><th>Foreman</th><th>Phone</th><th>Start</th><th>End</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ==================== SAFETY ==================== -->
+<div class="section" id="sec-safety">
+  <h2 class="section-title">Safety Intelligence</h2>
+  <p class="section-desc">Fall protection zones, confined spaces, hot work, crane exclusions, competent persons.</p>
+  <div id="safety-content"></div>
+</div>
+
+<!-- ==================== SWPPP ==================== -->
+<div class="section" id="sec-swppp">
+  <h2 class="section-title">SWPPP & Erosion Control</h2>
+  <p class="section-desc">Stormwater pollution prevention plan data.</p>
+  <div class="detail-card" id="swppp-detail"></div>
+</div>
+
+<!-- ==================== GEOTECHNICAL ==================== -->
+<div class="section" id="sec-geotech">
+  <h2 class="section-title">Geotechnical Data</h2>
+  <p class="section-desc">Soil conditions, bearing capacity, fill requirements.</p>
+  <div class="detail-card" id="geotech-detail"></div>
+</div>
+
+<!-- ==================== RFI LOG ==================== -->
+<div class="section" id="sec-rfis">
+  <h2 class="section-title">RFI Log</h2>
+  <p class="section-desc">Requests for Information — tracked from draft through resolution.</p>
+  <div class="card-grid" id="rfi-summary-cards"></div>
+  <div class="search-bar"><input type="text" id="rfi-search" placeholder="Search RFIs..."><select id="rfi-status-filter"><option value="">All Statuses</option><option value="draft">Draft</option><option value="issued">Issued</option><option value="response_received">Response Received</option><option value="resolved">Resolved</option></select></div>
+  <div class="table-wrap"><table id="rfis-table"><thead><tr><th>ID</th><th>Date</th><th>Subject</th><th>To</th><th>Location</th><th>Urgency</th><th>Status</th><th>Impact</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ==================== SUBMITTAL LOG ==================== -->
+<div class="section" id="sec-submittals">
+  <h2 class="section-title">Submittal Log</h2>
+  <p class="section-desc">Product data, shop drawings, samples — tracked through review cycle.</p>
+  <div class="card-grid" id="sub-summary-cards"></div>
+  <div class="search-bar"><input type="text" id="submittal-search" placeholder="Search submittals..."><select id="submittal-status-filter"><option value="">All Statuses</option><option value="draft">Draft</option><option value="submitted">Submitted</option><option value="under_review">Under Review</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div>
+  <div class="table-wrap"><table id="submittals-table"><thead><tr><th>ID</th><th>Spec Section</th><th>Item</th><th>Manufacturer</th><th>Sub</th><th>Type</th><th>Status</th><th>Lead Time</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ==================== PROCUREMENT ==================== -->
+<div class="section" id="sec-procurement">
+  <h2 class="section-title">Procurement & Materials</h2>
+  <p class="section-desc">Material orders, deliveries, and spec verification tracking.</p>
+  <div class="card-grid" id="proc-summary-cards"></div>
+  <div class="search-bar"><input type="text" id="proc-search" placeholder="Search materials..."><select id="proc-status-filter"><option value="">All Statuses</option><option value="not_ordered">Not Ordered</option><option value="ordered">Ordered</option><option value="in_production">In Production</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="delayed">Delayed</option></select></div>
+  <div class="table-wrap"><table id="proc-table"><thead><tr><th>ID</th><th>Item</th><th>Spec</th><th>Category</th><th>Supplier</th><th>PO #</th><th>Expected</th><th>Status</th><th>Verified</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ==================== VENDORS ==================== -->
+<div class="section" id="sec-vendors">
+  <h2 class="section-title">Vendor Database</h2>
+  <p class="section-desc">Approved suppliers, capabilities, and quote history.</p>
+  <div class="search-bar"><input type="text" id="vendor-search" placeholder="Search vendors..."></div>
+  <div id="vendors-list"></div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+// ==================== DATA ====================
+// This is where project intelligence data gets embedded.
+// When generated by the /project-intel command, real data replaces this.
+const CONFIG = {
+  "project_basics": {
+    "project_name": "Sample Project \u2014 Load Real Data with /project-intel",
+    "project_code": "DEMO",
+    "project_number": "",
+    "client": "",
+    "superintendent": "",
+    "architect": "",
+    "project_manager": "",
+    "engineers": {
+      "structural": "",
+      "mep": "",
+      "civil": ""
+    },
+    "address": "",
+    "building_type": "",
+    "gross_sf": "",
+    "stories": "",
+    "logo_path": ""
+  },
+  "project_intelligence": {
+    "grid_lines": {
+      "columns": [],
+      "rows": [],
+      "spacing": "",
+      "notes": ""
+    },
+    "building_areas": [],
+    "floor_levels": [],
+    "room_schedule": [],
+    "site_layout": {
+      "north_orientation": "",
+      "access_points": [],
+      "laydown_areas": [],
+      "trailer_location": "",
+      "dumpster_locations": [],
+      "crane_locations": [],
+      "haul_routes": [],
+      "parking": {
+        "construction": "",
+        "permanent": ""
+      }
+    },
+    "spec_sections": [],
+    "key_materials": [],
+    "weather_thresholds": [],
+    "hold_points": [],
+    "tolerances": [],
+    "schedule": {
+      "current_phase": "",
+      "percent_complete": "",
+      "milestones": [],
+      "critical_path": [],
+      "near_critical": [],
+      "weather_sensitive_activities": [],
+      "long_lead_items": [],
+      "substantial_completion": "",
+      "final_completion": ""
+    },
+    "contract": {
+      "ntp_date": "",
+      "completion_date": "",
+      "liquidated_damages": "",
+      "working_hours": {
+        "start": "",
+        "end": "",
+        "days": ""
+      },
+      "noise_restrictions": "",
+      "holidays": [],
+      "documentation_requirements": {
+        "daily_report_required": true,
+        "photo_requirements": "",
+        "submission_timing": "",
+        "distribution_list": [],
+        "special_certifications": []
+      },
+      "special_requirements": []
+    },
+    "subcontractors": [],
+    "safety": {
+      "fall_protection_zones": [],
+      "confined_spaces": [],
+      "hot_work_areas": [],
+      "crane_exclusion_zones": [],
+      "overhead_power_lines": [],
+      "emergency_assembly_point": "",
+      "competent_persons": []
+    },
+    "swppp": {
+      "permit_number": "",
+      "bmps": [],
+      "inspection_triggers": {
+        "rainfall_threshold": "",
+        "frequency": "",
+        "inspector": ""
+      },
+      "documentation_requirements": "",
+      "corrective_action_timeline": ""
+    },
+    "geotechnical": {
+      "bearing_capacity": "",
+      "allowable_soil_pressure": "",
+      "water_table_depth": "",
+      "frost_depth": "",
+      "unsuitable_soils": "",
+      "fill_requirements": {
+        "material": "",
+        "compaction_density": "",
+        "lift_thickness": "",
+        "testing_frequency": ""
+      },
+      "dewatering_required": false,
+      "dewatering_notes": "",
+      "special_foundations": ""
+    },
+    "rfi_log": [],
+    "submittal_log": [],
+    "procurement_log": [],
+    "owner_reports": [],
+    "lookahead_history": [],
+    "vendor_database": []
+  },
+  "documents_loaded": [],
+  "version_history": []
+};
+
+const PI = CONFIG.project_intelligence || {};
+const PB = CONFIG.project_basics || {};
+const DL = CONFIG.documents_loaded || [];
+
+// ==================== HELPERS ====================
+function $(id) { return document.getElementById(id); }
+function esc(s) { if (!s && s !== 0) return '—'; const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
+function statusClass(s) {
+  if (!s) return 'status-gray';
+  s = s.toLowerCase();
+  if (['complete','resolved','approved','delivered','active','on_track','pass'].some(x => s.includes(x))) return 'status-green';
+  if (['draft','pending','upcoming','not_ordered','under_review','in_progress'].some(x => s.includes(x))) return 'status-blue';
+  if (['at_risk','delayed','partial','urgent','conditional','revise','approved_as_noted'].some(x => s.includes(x))) return 'status-amber';
+  if (['behind','rejected','critical','fail','overdue','cancelled','void'].some(x => s.includes(x))) return 'status-red';
+  return 'status-gray';
+}
+function statusBadge(s) { return `<span class="status ${statusClass(s)}">${esc(s).replace(/_/g,' ')}</span>`; }
+function urgencyBadge(u) {
+  if (!u) return '—';
+  const c = u === 'critical' ? 'status-red' : u === 'urgent' ? 'status-amber' : 'status-blue';
+  return `<span class="status ${c}">${esc(u)}</span>`;
+}
+function countByStatus(arr, field) {
+  const c = {}; (arr||[]).forEach(i => { const s = (i[field]||'unknown').replace(/_/g,' '); c[s] = (c[s]||0)+1; }); return c;
+}
+function cardHTML(label, value, sub) {
+  return `<div class="card"><div class="card-label">${label}</div><div class="card-value">${value}</div>${sub?'<div class="card-sub">'+sub+'</div>':''}</div>`;
+}
+function kvHTML(label, value) {
+  return `<div class="kv-item"><div class="kv-label">${label}</div><div class="kv-value">${esc(value)}</div></div>`;
+}
+function tableRows(tbody, rows) { tbody.innerHTML = rows.join(''); }
+function arrLen(a) { return (a||[]).filter(i => { const vals = Object.values(i||{}); return vals.some(v => v && v !== '' && v !== 0 && v !== false); }).length; }
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  // Header
+  $('header-project').textContent = PB.project_name ? `${PB.project_name} ${PB.project_code ? '('+PB.project_code+')' : ''}` : 'No project loaded';
+  $('header-date').textContent = 'Generated ' + new Date().toLocaleDateString();
+
+  // Sidebar navigation
+  document.querySelectorAll('.sidebar a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.sidebar a').forEach(x => x.classList.remove('active'));
+      a.classList.add('active');
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      const sec = $('sec-' + a.dataset.section);
+      if (sec) sec.classList.add('active');
+    });
+  });
+
+  // Sidebar badges
+  const counts = {
+    rooms: arrLen(PI.room_schedule), specs: arrLen(PI.spec_sections), materials: arrLen(PI.key_materials),
+    weather: arrLen(PI.weather_thresholds), holdpoints: arrLen(PI.hold_points), tolerances: arrLen(PI.tolerances),
+    subs: arrLen(PI.subcontractors), rfis: arrLen(PI.rfi_log), submittals: arrLen(PI.submittal_log),
+    procurement: arrLen(PI.procurement_log), vendors: arrLen(PI.vendor_database), documents: arrLen(DL),
+    areas: arrLen(PI.building_areas)
+  };
+  document.querySelectorAll('.sidebar a').forEach(a => {
+    const key = a.dataset.section;
+    if (counts[key] > 0) {
+      const b = document.createElement('span');
+      b.className = 'badge';
+      b.textContent = counts[key];
+      a.appendChild(b);
+    }
+  });
+
+  renderOverview();
+  renderDocuments();
+  renderGridLines();
+  renderAreas();
+  renderRooms();
+  renderSite();
+  renderSpecs();
+  renderMaterials();
+  renderWeather();
+  renderHoldPoints();
+  renderTolerances();
+  renderSchedule();
+  renderContract();
+  renderSubs();
+  renderSafety();
+  renderSWPPP();
+  renderGeotech();
+  renderRFIs();
+  renderSubmittals();
+  renderProcurement();
+  renderVendors();
+});
+
+// ==================== OVERVIEW ====================
+function renderOverview() {
+  const cards = [];
+  cards.push(cardHTML('Spec Sections', arrLen(PI.spec_sections), 'CSI divisions extracted'));
+  cards.push(cardHTML('Hold Points', arrLen(PI.hold_points), 'Inspection requirements'));
+  cards.push(cardHTML('Subcontractors', arrLen(PI.subcontractors), 'In directory'));
+  cards.push(cardHTML('RFIs', arrLen(PI.rfi_log), 'Logged'));
+  cards.push(cardHTML('Submittals', arrLen(PI.submittal_log), 'Tracked'));
+  cards.push(cardHTML('Procurement', arrLen(PI.procurement_log), 'Items tracked'));
+  cards.push(cardHTML('Rooms', arrLen(PI.room_schedule), 'In room schedule'));
+  cards.push(cardHTML('Documents', arrLen(DL), 'Processed'));
+  $('overview-cards').innerHTML = cards.join('');
+
+  // Coverage grid
+  const sections = [
+    {name:'Grid Lines', has: PI.grid_lines && (PI.grid_lines.columns?.length || PI.grid_lines.rows?.length)},
+    {name:'Building Areas', has: arrLen(PI.building_areas)},
+    {name:'Floor Levels', has: arrLen(PI.floor_levels)},
+    {name:'Room Schedule', has: arrLen(PI.room_schedule)},
+    {name:'Site Layout', has: PI.site_layout && Object.values(PI.site_layout||{}).some(v=>v&&(Array.isArray(v)?v.length:v!==''))},
+    {name:'Spec Sections', has: arrLen(PI.spec_sections)},
+    {name:'Key Materials', has: arrLen(PI.key_materials)},
+    {name:'Weather Thresholds', has: arrLen(PI.weather_thresholds)},
+    {name:'Hold Points', has: arrLen(PI.hold_points)},
+    {name:'Tolerances', has: arrLen(PI.tolerances)},
+    {name:'Schedule', has: PI.schedule && (PI.schedule.milestones?.length || PI.schedule.current_phase)},
+    {name:'Contract', has: PI.contract && (PI.contract.ntp_date || PI.contract.completion_date)},
+    {name:'Subcontractors', has: arrLen(PI.subcontractors)},
+    {name:'Safety', has: PI.safety && Object.values(PI.safety||{}).some(v=>Array.isArray(v)?v.length:v&&v!=='')},
+    {name:'SWPPP', has: PI.swppp && (PI.swppp.permit_number || PI.swppp.bmps?.length)},
+    {name:'Geotechnical', has: PI.geotechnical && Object.values(PI.geotechnical||{}).some(v=>v&&v!==''&&v!==false)},
+    {name:'RFI Log', has: arrLen(PI.rfi_log)},
+    {name:'Submittal Log', has: arrLen(PI.submittal_log)},
+    {name:'Procurement Log', has: arrLen(PI.procurement_log)},
+    {name:'Vendor Database', has: arrLen(PI.vendor_database)},
+  ];
+  $('coverage-grid').innerHTML = sections.map(s =>
+    `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;background:${s.has?'#E8F5E9':'#FFF3E0'};">
+      <span style="font-size:16px;">${s.has?'✅':'⬜'}</span>
+      <span style="font-size:13px;font-weight:500;">${s.name}</span>
+    </div>`
+  ).join('');
+}
+
+// ==================== DOCUMENTS ====================
+function renderDocuments() {
+  if (!DL.length) { $('sec-documents').querySelector('.table-wrap').innerHTML = emptyState('No documents loaded yet','Run /process-docs to process construction documents.'); return; }
+  tableRows($('docs-table').querySelector('tbody'), DL.map(d =>
+    `<tr><td><strong>${esc(d.filename)}</strong></td><td>${esc(d.type)}</td><td>${esc(d.discipline)}</td><td>${esc(d.date_loaded)}</td><td>${(d.sections_extracted||[]).map(s=>`<span class="div-tag general">${esc(s)}</span>`).join(' ')}</td><td>${statusBadge(d.confidence||'')}</td></tr>`
+  ));
+}
+
+// ==================== GRID LINES ====================
+function renderGridLines() {
+  const g = PI.grid_lines || {};
+  const cols = g.columns || [];
+  const rows = g.rows || [];
+  if (!cols.length && !rows.length) { $('grid-detail').innerHTML = emptyState('No grid data','Process structural drawings to extract grid lines.'); return; }
+  let html = '<div class="kv-grid">';
+  html += kvHTML('Columns', cols.join(', ') || '—');
+  html += kvHTML('Rows', rows.join(', ') || '—');
+  html += kvHTML('Spacing', g.spacing || '—');
+  html += kvHTML('Notes', g.notes || '—');
+  html += '</div>';
+  if (cols.length && rows.length) {
+    html += '<div style="margin-top:16px;overflow-x:auto;"><table style="min-width:auto;"><thead><tr><th style="background:#F5F5F5;"></th>';
+    cols.forEach(c => { html += `<th style="text-align:center;min-width:44px;">${esc(c)}</th>`; });
+    html += '</tr></thead><tbody>';
+    rows.forEach(r => {
+      html += `<tr><td style="font-weight:700;background:#F5F5F5;text-align:center;">${esc(r)}</td>`;
+      cols.forEach(() => { html += '<td style="text-align:center;color:#CCC;">+</td>'; });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+  $('grid-detail').innerHTML = html;
+}
+
+// ==================== BUILDING AREAS ====================
+function renderAreas() {
+  const areas = PI.building_areas || [];
+  if (!areas.length) return;
+  tableRows($('areas-table').querySelector('tbody'), areas.map(a =>
+    `<tr><td><strong>${esc(a.name)}</strong></td><td>${esc(a.grids)}</td><td>${esc(a.floors)}</td><td>${esc(a.use)}</td></tr>`
+  ));
+}
+
+// ==================== ROOM SCHEDULE ====================
+function renderRooms() {
+  const rooms = PI.room_schedule || [];
+  if (!rooms.length) return;
+  const floors = [...new Set(rooms.map(r=>r.floor_level).filter(Boolean))];
+  const sel = $('room-floor-filter');
+  floors.forEach(f => { const o = document.createElement('option'); o.value = f; o.textContent = f; sel.appendChild(o); });
+
+  function render(filter, floorFilter) {
+    let filtered = rooms;
+    if (filter) { const q = filter.toLowerCase(); filtered = filtered.filter(r => Object.values(r).some(v => String(v).toLowerCase().includes(q))); }
+    if (floorFilter) filtered = filtered.filter(r => r.floor_level === floorFilter);
+    tableRows($('rooms-table').querySelector('tbody'), filtered.map(r =>
+      `<tr><td><strong>${esc(r.room_number)}</strong></td><td>${esc(r.room_name)}</td><td>${esc(r.floor_level)}</td><td>${esc(r.building_area)}</td><td>${esc(r.department)}</td></tr>`
+    ));
+  }
+  render();
+  $('room-search').addEventListener('input', () => render($('room-search').value, $('room-floor-filter').value));
+  $('room-floor-filter').addEventListener('change', () => render($('room-search').value, $('room-floor-filter').value));
+}
+
+// ==================== SITE LAYOUT ====================
+function renderSite() {
+  const s = PI.site_layout || {};
+  let html = '<div class="kv-grid">';
+  html += kvHTML('North Orientation', s.north_orientation);
+  html += kvHTML('Trailer Location', s.trailer_location);
+  html += kvHTML('Construction Parking', s.parking?.construction);
+  html += kvHTML('Permanent Parking', s.parking?.permanent);
+  html += '</div>';
+  const lists = [
+    {label:'Access Points', data:s.access_points},
+    {label:'Laydown Areas', data:s.laydown_areas},
+    {label:'Dumpster Locations', data:s.dumpster_locations},
+    {label:'Crane Locations', data:s.crane_locations},
+    {label:'Haul Routes', data:s.haul_routes}
+  ];
+  lists.forEach(l => {
+    if (l.data && l.data.length) {
+      html += `<div style="margin-top:12px;"><strong style="font-size:13px;">${l.label}:</strong> ${l.data.map(i=>`<span class="div-tag general">${esc(i)}</span>`).join(' ')}</div>`;
+    }
+  });
+  $('site-detail').innerHTML = html;
+}
+
+// ==================== SPEC SECTIONS ====================
+function renderSpecs() {
+  const specs = PI.spec_sections || [];
+  if (!specs.length) { $('specs-list').innerHTML = emptyState('No spec sections extracted','Process project specifications to populate this section.'); return; }
+  const divs = [...new Set(specs.map(s=>s.division).filter(Boolean))].sort();
+  const sel = $('spec-div-filter');
+  divs.forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = 'Division '+d; sel.appendChild(o); });
+
+  function render(filter, divFilter) {
+    let filtered = specs;
+    if (filter) { const q = filter.toLowerCase(); filtered = filtered.filter(s => [s.division,s.section,s.title,s.key_req,s.notes].some(v => String(v||'').toLowerCase().includes(q))); }
+    if (divFilter) filtered = filtered.filter(s => s.division === divFilter);
+
+    $('specs-list').innerHTML = filtered.map(s => {
+      let html = `<div class="detail-card"><h3><span class="div-tag arch">Div ${esc(s.division)}</span> ${esc(s.section)} — ${esc(s.title)}</h3>`;
+      if (s.key_req) html += `<p style="margin-bottom:10px;font-size:13px;">${esc(s.key_req)}</p>`;
+      html += '<div class="kv-grid">';
+      if (s.weather_thresholds) {
+        const wt = s.weather_thresholds;
+        if (wt.min_temp) html += kvHTML('Min Temp', wt.min_temp);
+        if (wt.max_temp) html += kvHTML('Max Temp', wt.max_temp);
+        if (wt.wind_limit) html += kvHTML('Wind Limit', wt.wind_limit);
+        if (wt.moisture_restrictions) html += kvHTML('Moisture', wt.moisture_restrictions);
+        if (wt.cold_weather_measures) html += kvHTML('Cold Weather', wt.cold_weather_measures);
+        if (wt.hot_weather_measures) html += kvHTML('Hot Weather', wt.hot_weather_measures);
+      }
+      if (s.testing) {
+        const t = s.testing;
+        if (t.type) html += kvHTML('Test Type', t.type);
+        if (t.frequency) html += kvHTML('Test Frequency', t.frequency);
+        if (t.agency) html += kvHTML('Test Agency', t.agency);
+        if (t.break_schedule) html += kvHTML('Break Schedule', t.break_schedule);
+      }
+      html += kvHTML('Submittal Required', s.submittal_required ? 'Yes' : 'No');
+      html += '</div>';
+      if (s.hold_points && s.hold_points.length) {
+        html += `<div style="margin-top:10px;"><strong style="font-size:12px;">Hold Points:</strong> ${s.hold_points.map(h=>`<span class="status status-red">${esc(h)}</span>`).join(' ')}</div>`;
+      }
+      if (s.witness_points && s.witness_points.length) {
+        html += `<div style="margin-top:6px;"><strong style="font-size:12px;">Witness Points:</strong> ${s.witness_points.map(w=>`<span class="status status-amber">${esc(w)}</span>`).join(' ')}</div>`;
+      }
+      if (s.tolerances && Object.keys(s.tolerances).length) {
+        html += `<div style="margin-top:6px;"><strong style="font-size:12px;">Tolerances:</strong> ${Object.entries(s.tolerances).map(([k,v])=>`<span class="div-tag general">${esc(k)}: ${esc(v)}</span>`).join(' ')}</div>`;
+      }
+      if (s.notes) html += `<p style="margin-top:8px;font-size:12px;color:var(--text-secondary);"><em>${esc(s.notes)}</em></p>`;
+      html += '</div>';
+      return html;
+    }).join('');
+  }
+  render();
+  $('spec-search').addEventListener('input', () => render($('spec-search').value, $('spec-div-filter').value));
+  $('spec-div-filter').addEventListener('change', () => render($('spec-search').value, $('spec-div-filter').value));
+}
+
+// ==================== KEY MATERIALS ====================
+function renderMaterials() {
+  const mats = PI.key_materials || [];
+  if (!mats.length) return;
+  tableRows($('materials-table').querySelector('tbody'), mats.map(m =>
+    `<tr><td><strong>${esc(m.material)}</strong></td><td>${esc(m.spec_section)}</td><td>${esc(m.specification)}</td><td>${esc(m.manufacturer)}</td><td>${esc(m.product)}</td><td>${esc(m.testing_required)}</td></tr>`
+  ));
+}
+
+// ==================== WEATHER THRESHOLDS ====================
+function renderWeather() {
+  const wt = PI.weather_thresholds || [];
+  if (!wt.length) return;
+  tableRows($('weather-table').querySelector('tbody'), wt.map(w =>
+    `<tr><td><strong>${esc(w.work_type)}</strong></td><td>${esc(w.min_temp)}</td><td>${esc(w.max_temp)}</td><td>${esc(w.max_wind)}</td><td>${w.moisture_ok?'<span class="status status-green">Yes</span>':'<span class="status status-red">No</span>'}</td><td>${esc(w.spec_reference)}</td><td style="font-size:12px;">${esc(w.mitigation_measures)}</td></tr>`
+  ));
+}
+
+// ==================== HOLD POINTS ====================
+function renderHoldPoints() {
+  const hp = PI.hold_points || [];
+  if (!hp.length) return;
+  tableRows($('holdpoints-table').querySelector('tbody'), hp.map(h =>
+    `<tr><td><strong>${esc(h.work_type)}</strong></td><td>${esc(h.inspection_name)}</td><td>${esc(h.trigger)}</td><td>${esc(h.inspector)}</td><td>${esc(h.spec_reference)}</td><td style="font-size:12px;">${esc(h.notes)}</td></tr>`
+  ));
+}
+
+// ==================== TOLERANCES ====================
+function renderTolerances() {
+  const tol = PI.tolerances || [];
+  if (!tol.length) return;
+  tableRows($('tolerances-table').querySelector('tbody'), tol.map(t =>
+    `<tr><td><strong>${esc(t.material_or_system)}</strong></td><td>${esc(t.measurement)}</td><td><code style="background:#F5F5F5;padding:2px 6px;border-radius:3px;">${esc(t.tolerance)}</code></td><td>${esc(t.spec_reference)}</td></tr>`
+  ));
+}
+
+// ==================== SCHEDULE ====================
+function renderSchedule() {
+  const sch = PI.schedule || {};
+  const cards = [];
+  cards.push(cardHTML('Current Phase', esc(sch.current_phase) || '—'));
+  cards.push(cardHTML('% Complete', esc(sch.percent_complete) || '—'));
+  cards.push(cardHTML('Substantial Completion', esc(sch.substantial_completion) || '—'));
+  cards.push(cardHTML('Final Completion', esc(sch.final_completion) || '—'));
+  $('schedule-cards').innerHTML = cards.join('');
+
+  // Milestones
+  const ms = sch.milestones || [];
+  if (ms.length) {
+    tableRows($('milestones-table').querySelector('tbody'), ms.map(m =>
+      `<tr><td><strong>${esc(m.name)}</strong></td><td>${esc(m.date)}</td><td>${esc(m.original_date)}</td><td>${statusBadge(m.status)}</td><td style="font-size:12px;">${esc(m.notes)}</td></tr>`
+    ));
+  }
+
+  // Critical path
+  const cp = sch.critical_path || [];
+  $('critical-path').innerHTML = cp.length ? cp.map(a => `<li style="padding:4px 0;font-size:13px;border-bottom:1px solid #F0F0F0;">• ${esc(a)}</li>`).join('') : '<li style="color:var(--text-secondary);font-size:13px;">No critical path data</li>';
+
+  // Long lead
+  const ll = sch.long_lead_items || [];
+  if (ll.length) {
+    tableRows($('longlead-table').querySelector('tbody'), ll.map(l =>
+      `<tr><td><strong>${esc(l.item)}</strong></td><td>${esc(l.supplier)}</td><td>${esc(l.expected_delivery)}</td><td>${statusBadge(l.status)}</td></tr>`
+    ));
+  }
+}
+
+// ==================== CONTRACT ====================
+function renderContract() {
+  const c = PI.contract || {};
+  let html = '<div class="kv-grid">';
+  html += kvHTML('NTP Date', c.ntp_date);
+  html += kvHTML('Completion Date', c.completion_date);
+  html += kvHTML('Liquidated Damages', c.liquidated_damages);
+  html += kvHTML('Working Hours', c.working_hours ? `${c.working_hours.start} - ${c.working_hours.end}` : '');
+  html += kvHTML('Work Days', c.working_hours?.days);
+  html += kvHTML('Noise Restrictions', c.noise_restrictions);
+  html += '</div>';
+  if (c.holidays && c.holidays.length) {
+    html += `<div style="margin-top:12px;"><strong style="font-size:12px;">Holidays:</strong> ${c.holidays.map(h=>`<span class="div-tag general">${esc(h)}</span>`).join(' ')}</div>`;
+  }
+  if (c.documentation_requirements) {
+    const dr = c.documentation_requirements;
+    html += '<div style="margin-top:16px;"><h4 style="font-size:14px;margin-bottom:8px;">Documentation Requirements</h4><div class="kv-grid">';
+    html += kvHTML('Daily Report Required', dr.daily_report_required ? 'Yes' : 'No');
+    html += kvHTML('Photo Requirements', dr.photo_requirements);
+    html += kvHTML('Submission Timing', dr.submission_timing);
+    html += '</div></div>';
+    if (dr.distribution_list?.length) html += `<div style="margin-top:8px;"><strong style="font-size:12px;">Distribution:</strong> ${dr.distribution_list.map(d=>`<span class="div-tag general">${esc(d)}</span>`).join(' ')}</div>`;
+  }
+  if (c.special_requirements?.length) {
+    html += `<div style="margin-top:12px;"><strong style="font-size:12px;">Special Requirements:</strong><ul style="margin-top:4px;padding-left:20px;font-size:13px;">${c.special_requirements.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>`;
+  }
+  $('contract-detail').innerHTML = html;
+}
+
+// ==================== SUBCONTRACTORS ====================
+function renderSubs() {
+  const subs = PI.subcontractors || [];
+  if (!subs.length) return;
+  function render(filter) {
+    let filtered = subs;
+    if (filter) { const q = filter.toLowerCase(); filtered = filtered.filter(s => [s.name,s.trade,s.scope,s.foreman].some(v => String(v||'').toLowerCase().includes(q))); }
+    tableRows($('subs-table').querySelector('tbody'), filtered.map(s =>
+      `<tr><td><strong>${esc(s.name)}</strong></td><td>${esc(s.trade)}</td><td style="max-width:200px;font-size:12px;">${esc(s.scope)}</td><td>${esc(s.foreman)}</td><td>${esc(s.phone)}</td><td>${esc(s.start_date)}</td><td>${esc(s.end_date)}</td><td>${statusBadge(s.status)}</td></tr>`
+    ));
+  }
+  render();
+  $('sub-search').addEventListener('input', () => render($('sub-search').value));
+}
+
+// ==================== SAFETY ====================
+function renderSafety() {
+  const s = PI.safety || {};
+  let html = '';
+  const sections = [
+    {title:'Fall Protection Zones', data:s.fall_protection_zones, cols:['Location','Trigger Height','Protection Type'], fields:['location','trigger_height','protection_type']},
+    {title:'Confined Spaces', data:s.confined_spaces, cols:['Location','Permit Required','Hazards'], fields:['location','permit_required','hazards']},
+    {title:'Hot Work Areas', data:s.hot_work_areas, cols:['Location','Permit Required','Fire Watch Duration'], fields:['location','permit_required','fire_watch_duration']},
+    {title:'Overhead Power Lines', data:s.overhead_power_lines, cols:['Location','Voltage','Clearance Required'], fields:['location','voltage','clearance_required']},
+    {title:'Competent Persons', data:s.competent_persons, cols:['Activity','Person','Certification'], fields:['activity','person','certification']}
+  ];
+  sections.forEach(sec => {
+    if (sec.data && sec.data.length) {
+      html += `<div class="detail-card"><h3>${sec.title}</h3><div class="table-wrap"><table><thead><tr>${sec.cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+      sec.data.forEach(row => {
+        html += '<tr>' + sec.fields.map(f => `<td>${typeof row[f] === 'boolean' ? (row[f]?'Yes':'No') : esc(row[f])}</td>`).join('') + '</tr>';
+      });
+      html += '</tbody></table></div></div>';
+    }
+  });
+  if (s.emergency_assembly_point) html += `<div class="detail-card"><h3>Emergency Assembly Point</h3><p style="font-size:14px;">${esc(s.emergency_assembly_point)}</p></div>`;
+  if (s.crane_exclusion_zones?.length) html += `<div class="detail-card"><h3>Crane Exclusion Zones</h3>${s.crane_exclusion_zones.map(z=>`<span class="div-tag general">${esc(z)}</span>`).join(' ')}</div>`;
+  $('safety-content').innerHTML = html || emptyState('No safety data','Process safety plans to extract this data.');
+}
+
+// ==================== SWPPP ====================
+function renderSWPPP() {
+  const sw = PI.swppp || {};
+  let html = '<div class="kv-grid">';
+  html += kvHTML('Permit Number', sw.permit_number);
+  html += kvHTML('Rainfall Threshold', sw.inspection_triggers?.rainfall_threshold);
+  html += kvHTML('Inspection Frequency', sw.inspection_triggers?.frequency);
+  html += kvHTML('Inspector', sw.inspection_triggers?.inspector);
+  html += kvHTML('Documentation Reqs', sw.documentation_requirements);
+  html += kvHTML('Corrective Action Timeline', sw.corrective_action_timeline);
+  html += '</div>';
+  if (sw.bmps?.length) {
+    html += '<div style="margin-top:16px;"><h4 style="font-size:14px;margin-bottom:8px;">BMPs (Best Management Practices)</h4>';
+    html += '<div class="table-wrap"><table><thead><tr><th>Type</th><th>Location</th><th>Install Date</th><th>Status</th></tr></thead><tbody>';
+    sw.bmps.forEach(b => { html += `<tr><td>${esc(b.type)}</td><td>${esc(b.location)}</td><td>${esc(b.install_date)}</td><td>${statusBadge(b.status)}</td></tr>`; });
+    html += '</tbody></table></div></div>';
+  }
+  $('swppp-detail').innerHTML = html;
+}
+
+// ==================== GEOTECHNICAL ====================
+function renderGeotech() {
+  const g = PI.geotechnical || {};
+  let html = '<div class="kv-grid">';
+  html += kvHTML('Bearing Capacity', g.bearing_capacity);
+  html += kvHTML('Allowable Soil Pressure', g.allowable_soil_pressure);
+  html += kvHTML('Water Table Depth', g.water_table_depth);
+  html += kvHTML('Frost Depth', g.frost_depth);
+  html += kvHTML('Unsuitable Soils', g.unsuitable_soils);
+  html += kvHTML('Dewatering Required', g.dewatering_required ? 'Yes' : 'No');
+  html += kvHTML('Dewatering Notes', g.dewatering_notes);
+  html += kvHTML('Special Foundations', g.special_foundations);
+  html += '</div>';
+  if (g.fill_requirements) {
+    const f = g.fill_requirements;
+    html += '<div style="margin-top:16px;"><h4 style="font-size:14px;margin-bottom:8px;">Fill Requirements</h4><div class="kv-grid">';
+    html += kvHTML('Material', f.material);
+    html += kvHTML('Compaction Density', f.compaction_density);
+    html += kvHTML('Lift Thickness', f.lift_thickness);
+    html += kvHTML('Testing Frequency', f.testing_frequency);
+    html += '</div></div>';
+  }
+  $('geotech-detail').innerHTML = html;
+}
+
+// ==================== RFI LOG ====================
+function renderRFIs() {
+  const rfis = PI.rfi_log || [];
+  // Summary cards
+  const st = countByStatus(rfis, 'status');
+  $('rfi-summary-cards').innerHTML = [
+    cardHTML('Total RFIs', rfis.length),
+    cardHTML('Open', (st['issued']||0) + (st['draft']||0) + (st['response received']||0), 'Awaiting resolution'),
+    cardHTML('Resolved', st['resolved']||0),
+    cardHTML('Critical', rfis.filter(r=>(r.urgency||'').includes('critical')).length, 'High urgency')
+  ].join('');
+
+  function render(filter, statusFilter) {
+    let filtered = rfis;
+    if (filter) { const q = filter.toLowerCase(); filtered = filtered.filter(r => [r.id,r.subject,r.description,r.addressed_to].some(v => String(v||'').toLowerCase().includes(q))); }
+    if (statusFilter) filtered = filtered.filter(r => r.status === statusFilter);
+    tableRows($('rfis-table').querySelector('tbody'), filtered.map(r =>
+      `<tr><td><strong>${esc(r.id)}</strong></td><td>${esc(r.date_issued)}</td><td>${esc(r.subject)}</td><td>${esc(r.addressed_to)}</td><td style="font-size:12px;">${esc(r.location?.description||'')} ${esc(r.location?.grid_lines||'')}</td><td>${urgencyBadge(r.urgency)}</td><td>${statusBadge(r.status)}</td><td>${r.schedule_impact!=='none'?`<span class="status status-amber">${esc(r.schedule_impact)} ${r.schedule_impact_days?'('+r.schedule_impact_days+'d)':''}</span>`:'—'}</td></tr>`
+    ));
+  }
+  render();
+  $('rfi-search').addEventListener('input', () => render($('rfi-search').value, $('rfi-status-filter').value));
+  $('rfi-status-filter').addEventListener('change', () => render($('rfi-search').value, $('rfi-status-filter').value));
+}
+
+// ==================== SUBMITTAL LOG ====================
+function renderSubmittals() {
+  const subs = PI.submittal_log || [];
+  const st = countByStatus(subs, 'status');
+  $('sub-summary-cards').innerHTML = [
+    cardHTML('Total Submittals', subs.length),
+    cardHTML('Under Review', st['under review']||0),
+    cardHTML('Approved', (st['approved']||0) + (st['approved as noted']||0)),
+    cardHTML('Action Needed', (st['revise and resubmit']||0) + (st['rejected']||0), 'Revise or rejected')
+  ].join('');
+
+  function render(filter, statusFilter) {
+    let filtered = subs;
+    if (filter) { const q = filter.toLowerCase(); filtered = filtered.filter(s => [s.id,s.item_description,s.product_name,s.manufacturer,s.submitting_sub].some(v => String(v||'').toLowerCase().includes(q))); }
+    if (statusFilter) filtered = filtered.filter(s => s.status === statusFilter);
+    tableRows($('submittals-table').querySelector('tbody'), filtered.map(s =>
+      `<tr><td><strong>${esc(s.id)}</strong></td><td>${esc(s.spec_section)}</td><td>${esc(s.item_description)}</td><td>${esc(s.manufacturer)}</td><td>${esc(s.submitting_sub)}</td><td>${esc((s.submittal_type||'').replace(/_/g,' '))}</td><td>${statusBadge(s.status)}</td><td>${s.lead_time_weeks?s.lead_time_weeks+' wks':'—'}</td></tr>`
+    ));
+  }
+  render();
+  $('submittal-search').addEventListener('input', () => render($('submittal-search').value, $('submittal-status-filter').value));
+  $('submittal-status-filter').addEventListener('change', () => render($('submittal-search').value, $('submittal-status-filter').value));
+}
+
+// ==================== PROCUREMENT ====================
+function renderProcurement() {
+  const proc = PI.procurement_log || [];
+  const st = countByStatus(proc, 'delivery_status');
+  $('proc-summary-cards').innerHTML = [
+    cardHTML('Total Items', proc.length),
+    cardHTML('Delivered', st['delivered']||0),
+    cardHTML('In Transit', (st['shipped']||0) + (st['in production']||0)),
+    cardHTML('Delayed', st['delayed']||0, 'Needs attention')
+  ].join('');
+
+  function render(filter, statusFilter) {
+    let filtered = proc;
+    if (filter) { const q = filter.toLowerCase(); filtered = filtered.filter(p => [p.id,p.item,p.supplier,p.po_number].some(v => String(v||'').toLowerCase().includes(q))); }
+    if (statusFilter) filtered = filtered.filter(p => p.delivery_status === statusFilter);
+    tableRows($('proc-table').querySelector('tbody'), filtered.map(p =>
+      `<tr><td><strong>${esc(p.id)}</strong></td><td>${esc(p.item)}</td><td>${esc(p.spec_section)}</td><td>${esc((p.category||'').replace(/_/g,' '))}</td><td>${esc(p.supplier)}</td><td>${esc(p.po_number)}</td><td>${esc(p.expected_delivery)}</td><td>${statusBadge(p.delivery_status)}</td><td>${p.verified_against_spec?'<span class="status status-green">Yes</span>':'<span class="status status-gray">No</span>'}</td></tr>`
+    ));
+  }
+  render();
+  $('proc-search').addEventListener('input', () => render($('proc-search').value, $('proc-status-filter').value));
+  $('proc-status-filter').addEventListener('change', () => render($('proc-search').value, $('proc-status-filter').value));
+}
+
+// ==================== VENDORS ====================
+function renderVendors() {
+  const vendors = PI.vendor_database || [];
+  if (!vendors.length) { $('vendors-list').innerHTML = emptyState('No vendors in database','Use /find-vendor to add suppliers.'); return; }
+  function render(filter) {
+    let filtered = vendors;
+    if (filter) { const q = filter.toLowerCase(); filtered = filtered.filter(v => [v.company_name,v.contact_person,...(v.capabilities||[]),...(v.materials_supplied||[])].some(val => String(val||'').toLowerCase().includes(q))); }
+    $('vendors-list').innerHTML = filtered.map(v => {
+      let html = `<div class="detail-card"><h3>${esc(v.company_name)} <span style="font-size:12px;color:var(--text-secondary);font-weight:400;">${esc(v.id)}</span></h3>`;
+      html += '<div class="kv-grid">';
+      html += kvHTML('Contact', v.contact_person);
+      html += kvHTML('Phone', v.phone);
+      html += kvHTML('Email', v.email);
+      html += kvHTML('Website', v.website);
+      html += kvHTML('Lead Time', v.lead_time_typical);
+      html += kvHTML('Rating', v.rating);
+      html += '</div>';
+      if (v.capabilities?.length) html += `<div style="margin-top:8px;"><strong style="font-size:12px;">Capabilities:</strong> ${v.capabilities.map(c=>`<span class="div-tag general">${esc(c)}</span>`).join(' ')}</div>`;
+      if (v.materials_supplied?.length) html += `<div style="margin-top:6px;"><strong style="font-size:12px;">Materials:</strong> ${v.materials_supplied.map(m=>`<span class="div-tag arch">${esc(m)}</span>`).join(' ')}</div>`;
+      if (v.certifications?.length) html += `<div style="margin-top:6px;"><strong style="font-size:12px;">Certifications:</strong> ${v.certifications.map(c=>`<span class="div-tag civil">${esc(c)}</span>`).join(' ')}</div>`;
+      if (v.past_quotes?.length) {
+        html += '<div style="margin-top:10px;"><strong style="font-size:12px;">Quote History:</strong><table style="margin-top:4px;"><thead><tr><th>Date</th><th>Item</th><th>Amount</th><th>Notes</th></tr></thead><tbody>';
+        v.past_quotes.forEach(q => { html += `<tr><td>${esc(q.date)}</td><td>${esc(q.item)}</td><td>${esc(q.amount)}</td><td>${esc(q.notes)}</td></tr>`; });
+        html += '</tbody></table></div>';
+      }
+      html += '</div>';
+      return html;
+    }).join('');
+  }
+  render();
+  $('vendor-search').addEventListener('input', () => render($('vendor-search').value));
+}
+
+// ==================== EMPTY STATE ====================
+function emptyState(title, desc) {
+  return `<div class="empty-state"><div class="icon">📭</div><h3>${title}</h3><p>${desc}</p></div>`;
+}
+</script>
+</body>
+</html>

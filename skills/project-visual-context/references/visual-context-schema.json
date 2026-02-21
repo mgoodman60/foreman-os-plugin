@@ -1,0 +1,282 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Project Visual Context",
+  "description": "Visual context data for AI rendering generation",
+  "type": "object",
+  "required": ["version", "project_code", "last_updated", "exterior", "interior"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Schema version"
+    },
+    "project_code": {
+      "type": "string",
+      "description": "Unique project identifier from project-config"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of last update"
+    },
+    "exterior": {
+      "type": "object",
+      "description": "Exterior context and site conditions",
+      "properties": {
+        "setting": {
+          "type": "object",
+          "description": "Site setting and context",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["rural", "suburban", "urban", "industrial", "campus", "mixed"],
+              "description": "Classification of site setting"
+            },
+            "terrain": {
+              "type": "string",
+              "description": "Terrain description (flat, rolling, hillside, valley, elevated, etc.)"
+            },
+            "elevation_description": {
+              "type": "string",
+              "description": "Detailed elevation and topography notes"
+            },
+            "adjacent_north": {
+              "type": "string",
+              "description": "Description of structures/context to the north"
+            },
+            "adjacent_south": {
+              "type": "string",
+              "description": "Description of structures/context to the south"
+            },
+            "adjacent_east": {
+              "type": "string",
+              "description": "Description of structures/context to the east"
+            },
+            "adjacent_west": {
+              "type": "string",
+              "description": "Description of structures/context to the west"
+            },
+            "nearest_structures": {
+              "type": "string",
+              "description": "Summary of nearby buildings/landmarks and distances"
+            }
+          }
+        },
+        "vegetation": {
+          "type": "object",
+          "description": "Vegetation and landscaping context",
+          "properties": {
+            "trees": {
+              "type": "string",
+              "description": "Types, density, and distribution of trees (deciduous, conifer, mixed)"
+            },
+            "ground_cover": {
+              "type": "string",
+              "description": "Ground cover types (grass, shrubs, bare soil, paved, etc.)"
+            },
+            "landscaping_planned": {
+              "type": "boolean",
+              "description": "Whether landscaping improvements are planned"
+            },
+            "landscaping_description": {
+              "type": "string",
+              "description": "Detailed description of planned landscaping"
+            }
+          }
+        },
+        "climate": {
+          "type": "object",
+          "description": "Climate and weather context",
+          "properties": {
+            "region": {
+              "type": "string",
+              "description": "Geographic region (e.g., Pacific Northwest, Southwest Desert)"
+            },
+            "zone": {
+              "type": "string",
+              "description": "Climate zone/USDA hardiness zone (e.g., Zone 6a)"
+            },
+            "seasons": {
+              "type": "string",
+              "enum": ["four_season", "mild_winter", "tropical", "arid", "mediterranean", "monsoon"],
+              "description": "Climate type classification"
+            },
+            "default_season": {
+              "type": "string",
+              "enum": ["spring", "summer", "fall", "winter"],
+              "description": "Preferred season for default renderings"
+            },
+            "prevailing_weather": {
+              "type": "string",
+              "description": "Typical weather to show in renderings (clear skies, partly cloudy, dramatic clouds, fog, etc.)"
+            }
+          }
+        },
+        "orientation": {
+          "type": "object",
+          "description": "Building orientation and cardinal directions",
+          "properties": {
+            "building_faces": {
+              "type": "string",
+              "description": "Which direction the main facade faces (N, NE, E, SE, S, SW, W, NW)"
+            },
+            "main_entry": {
+              "type": "string",
+              "description": "Direction of primary building entry"
+            },
+            "parking": {
+              "type": "string",
+              "description": "Location and description of parking areas"
+            },
+            "sun_path": {
+              "type": "string",
+              "description": "Sun path and shadow characteristics for the region and season"
+            }
+          }
+        },
+        "photos": {
+          "type": "array",
+          "description": "Site and reference photographs",
+          "items": {
+            "type": "object",
+            "required": ["id", "file", "type"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique photo identifier"
+              },
+              "file": {
+                "type": "string",
+                "description": "Filename or relative path to photo"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["aerial", "street", "adjacent", "terrain", "vegetation", "conditions", "interior_reference", "inspiration"],
+                "description": "Photo category"
+              },
+              "direction": {
+                "type": "string",
+                "description": "Cardinal direction photo faces (N, NE, E, SE, S, SW, W, NW), if applicable"
+              },
+              "analysis": {
+                "type": "string",
+                "description": "AI-generated description of photo content and context"
+              }
+            }
+          }
+        },
+        "construction_status": {
+          "type": "object",
+          "description": "Current construction phase and visible work",
+          "properties": {
+            "current_phase": {
+              "type": "string",
+              "description": "Current project phase (e.g., foundation, framing, finishes)"
+            },
+            "visible_work": {
+              "type": "string",
+              "description": "Description of active construction work visible on site"
+            },
+            "equipment_on_site": {
+              "type": "array",
+              "description": "Types of equipment visible (cranes, formwork, trailers, excavators, etc.)",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "interior": {
+      "type": "object",
+      "description": "Interior design intent and finishes",
+      "properties": {
+        "design_character": {
+          "type": "string",
+          "enum": ["warm_residential", "modern", "clinical", "hospitality", "institutional", "industrial", "corporate", "educational", "retail"],
+          "description": "Overall design character and aesthetic"
+        },
+        "color_palette": {
+          "type": "object",
+          "description": "Interior color scheme",
+          "properties": {
+            "primary": {
+              "type": "string",
+              "description": "Primary wall/dominant color (e.g., warm gray, soft white, sage green)"
+            },
+            "secondary": {
+              "type": "string",
+              "description": "Secondary color (e.g., light gray, warm cream, natural wood tone)"
+            },
+            "accent": {
+              "type": "string",
+              "description": "Accent color for highlights and features (e.g., warm copper, deep teal, muted sage)"
+            },
+            "reference_images": {
+              "type": "array",
+              "description": "Filenames of color/design reference photos",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "materials_by_room_type": {
+          "type": "object",
+          "description": "Material and finish specifications organized by room type",
+          "additionalProperties": {
+            "type": "object",
+            "description": "Materials for a specific room type",
+            "properties": {
+              "flooring": {
+                "type": "string",
+                "description": "Flooring material, finish, and color (e.g., polished concrete, light gray; ceramic tile, warm beige)"
+              },
+              "walls": {
+                "type": "string",
+                "description": "Wall finish and color (e.g., painted gypsum board, soft white; tile wainscot + paint, sage)"
+              },
+              "ceiling": {
+                "type": "string",
+                "description": "Ceiling type and finish (e.g., gypsum board, bright white; exposed structure, natural steel)"
+              },
+              "base": {
+                "type": "string",
+                "description": "Base and trim material, finish, and color (e.g., painted wood base, dark gray)"
+              },
+              "casework": {
+                "type": "string",
+                "description": "Cabinet and casework description (e.g., natural wood, shaker style, soft-close)"
+              },
+              "countertop": {
+                "type": "string",
+                "description": "Countertop material and finish (e.g., quartz, white; solid surface, warm gray)"
+              },
+              "hardware_finish": {
+                "type": "string",
+                "description": "Hardware finish throughout (e.g., brushed nickel, oil-rubbed bronze, stainless steel)"
+              }
+            }
+          }
+        },
+        "furniture_by_room_type": {
+          "type": "object",
+          "description": "Furniture and fixture style by room type",
+          "additionalProperties": {
+            "type": "string",
+            "description": "Furniture description for a room type (e.g., modern minimalist, warm residential, clinical institutional)"
+          }
+        },
+        "brand_standards": {
+          "type": "string",
+          "description": "Owner brand standards, design guidelines, or corporate identity requirements"
+        },
+        "special_notes": {
+          "type": "string",
+          "description": "Special design features, historic preservation, accessibility priorities, sustainability focus, etc."
+        }
+      }
+    }
+  }
+}

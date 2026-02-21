@@ -1,0 +1,112 @@
+---
+name: rfi-preparer
+description: >
+  Draft RFIs and submittal transmittals with auto-filled project intelligence. Use when the user wants
+  to "write an RFI", "draft an RFI", "prepare an RFI", "send an RFI", "create a transmittal",
+  "prepare a submittal transmittal", "submittal cover sheet", or any mention of RFI or transmittal preparation.
+version: 1.0.0
+---
+
+# RFI Preparer Skill
+
+## Overview
+
+The RFI Preparer skill automates the creation of Request For Information (RFI) forms and submittal transmittals using intelligent data from your project management database. Instead of manually filling out forms and hunting through drawings for sheet numbers, this skill:
+
+- **Auto-populates** project team information, project details, and sequential numbering from your RFI and submittal logs
+- **Resolves casual location descriptions** ("east side second floor") to specific grid lines, building areas, floor levels, and drawing sheet references
+- **Auto-fills spec sections** based on work type and references from your active specifications
+- **Generates professional RFI text** from casual descriptions provided by site personnel
+- **Formats documents** ready for signature and distribution (HTML or PDF export)
+- **Maintains numbering sequences** automatically from rfi_log and submittal_log
+
+## Document Types
+
+### A) Question RFI
+A formal request for clarification or direction from the architect or engineer regarding:
+- Conflicts or ambiguities in the contract documents
+- Constructability concerns
+- Design questions or field conditions
+- Interpretation of drawings or specifications
+
+**Typical flow**: Field personnel describe the issue casually → Skill auto-fills technical data → Professional RFI is drafted → Sent to appropriate design professional
+
+### B) Submittal Transmittal
+A cover sheet accompanying a submittal package (product data, shop drawings, samples, test reports) being sent for architect/engineer review and approval.
+
+**Typical flow**: Superintendent identifies submittal → Skill auto-fills project/spec data → Transmittal form is generated → Package is sent with cover sheet
+
+## Data Sources
+
+The skill uses project intelligence from the following sources:
+
+- **project_basics**: Project name, number, address; project team members (Superintendent, Architect, Engineer, General Contractor)
+- **grid_lines**: Building grid system (column lines, spacing, labels)
+- **building_areas**: Defined areas of the project (East Wing, West Wing, Main Lobby, etc.)
+- **floor_levels**: Floor names and numbers (Level 1 = Ground Floor, Level 2, Level 3, etc.)
+- **spec_sections**: Active specifications organized by CSI MasterFormat (Division and Section numbers)
+- **schedule**: Project timeline, key dates, current phase
+- **subcontractors**: Vendor/trade contact information
+- **rfi_log**: Complete history of all RFIs issued (used to determine next sequential RFI number and status tracking)
+- **submittal_log**: Complete history of all submittals (used for transmittal numbering and linking)
+- **documents_loaded**: List of all loaded drawing sheets with their sheet numbers and descriptions
+- **room_schedule**: Room-by-room breakdown with location, area, finishes (for room-specific references)
+
+## RFI Workflow
+
+1. **Determine next RFI number** from rfi_log (typically auto-increment: if last RFI was RFI-047, next is RFI-048)
+2. **Ask the user** to describe the question, issue, or conflict in casual language (no jargon required)
+3. **Auto-resolve location references** from casual description to structured grid/area/level data
+4. **Auto-resolve drawing references** by matching building area and location to loaded plan sheets
+5. **Auto-resolve spec section references** by matching work type to active spec sections
+6. **Auto-fill project team** with superintendent as sender, architect or engineer as recipient (based on question topic)
+7. **Draft professional RFI text** transforming the user's casual description into clear, specific technical language
+8. **Present formatted RFI** for review and approval before sending
+9. **Save to rfi_log** with "draft" status; user can mark as "issued" when ready
+10. **Offer export as PDF** with professional formatting and signature fields
+
+## Transmittal Workflow
+
+1. **Determine next transmittal number** from submittal_log
+2. **Ask the user** to identify what is being submitted (product, shop drawings, samples, etc.)
+3. **Identify spec section** where the item belongs
+4. **Auto-fill project/team details** from project_basics
+5. **Auto-fill manufacturer/product info** if available in subcontractors or submittal_log
+6. **Present formatted transmittal** for review
+7. **Save to submittal_log** with status "submitted"
+8. **Offer export as PDF** for distribution with the submittal package
+
+## Output
+
+- **Formatted HTML display** for on-screen review (shows all fields, ready-to-sign state)
+- **PDF export** with professional styling, matching project brand palette, US Letter size, signature lines
+- **Log entries** created in rfi_log or submittal_log with appropriate metadata
+- **Email draft** ready to send to recipient (if email integration is available)
+
+## Cross-References
+
+- **project-data skill**: Source for all project intelligence (grid lines, building areas, floor levels, spec sections, team info, logs)
+- **document-intelligence skill**: Advanced sheet reference matching and drawing metadata lookup
+- **report-builder skill**: PDF generation and styling (uses same palette: Navy #1B2A4A, Blue #2E5EAA, Light Blue #EDF2F9)
+
+## Professional Standards
+
+All RFIs and transmittals follow construction industry best practices:
+- Clear, specific language (no ambiguity)
+- Explicit references to drawings and specifications (sheet numbers, division/section numbers)
+- State the conflict or ambiguity clearly
+- Suggest a resolution if possible (shows collaboration, speeds response)
+- Appropriate urgency level (Routine/Urgent/Critical) with justification
+- Required response date linked to schedule impact
+- Professional tone and format matching industry standards
+
+## Integration Notes
+
+This skill requires:
+- Access to project_basics, rfi_log, submittal_log, documents_loaded
+- Grid line, building area, floor level, and spec section data populated in project intelligence
+- Document list (documents_loaded) with accurate sheet numbers and descriptions
+- Current project schedule for date calculations and response deadlines
+
+If any required data is missing, the skill will prompt the user to provide it or use defaults.
+
