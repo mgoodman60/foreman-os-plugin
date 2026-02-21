@@ -1,0 +1,13 @@
+{
+  "name": "foremanos-testing",
+  "version": "1.0.0",
+  "description": "ForemanOS testing patterns — Vitest conventions, API route testing, coverage analysis",
+  "author": { "name": "ForemanOS" },
+  "skills": [
+    "./skills/vitest-patterns",
+    "./skills/api-route-testing"
+  ],
+  "commands": [
+    "./commands/test-coverage-report.md"
+  ]
+}

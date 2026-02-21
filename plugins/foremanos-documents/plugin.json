@@ -1,0 +1,11 @@
+{
+  "name": "foremanos-documents",
+  "version": "1.0.0",
+  "description": "ForemanOS document patterns — PDF generation, Office documents, file storage with R2",
+  "author": { "name": "ForemanOS" },
+  "skills": [
+    "./skills/pdf-generation",
+    "./skills/office-documents",
+    "./skills/file-storage"
+  ]
+}

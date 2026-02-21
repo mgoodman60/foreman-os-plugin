@@ -1,0 +1,15 @@
+{
+  "name": "foremanos-llm",
+  "version": "1.0.0",
+  "description": "ForemanOS LLM system patterns — multi-provider orchestration, vision pipeline, RAG architecture, prompt patterns",
+  "author": { "name": "ForemanOS" },
+  "skills": [
+    "./skills/llm-orchestration",
+    "./skills/vision-pipeline",
+    "./skills/rag-system",
+    "./skills/prompt-patterns"
+  ],
+  "agents": [
+    "./agents/llm-cost-analyzer.md"
+  ]
+}

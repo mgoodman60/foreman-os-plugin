@@ -9,6 +9,26 @@
       "name": "foreman-os",
       "source": "./",
       "description": "Complete construction superintendent operating system — 42 skills, 37 commands, 21 field-reference documents. Daily reporting, 3-week look-ahead planning, RFI/submittal management, weekly owner reports, material tracking, dashboards, closeout/commissioning, deep document intelligence, and AutoCAD DWG extraction."
+    },
+    {
+      "name": "foremanos-stack",
+      "source": "./plugins/foremanos-stack",
+      "description": "ForemanOS stack patterns — Prisma 6.7 conventions, NextAuth RBAC (4-role hierarchy), Redis caching with graceful degradation, SWR data fetching patterns, Trigger.dev v3 task definitions. Includes schema drift and auth pattern hooks."
+    },
+    {
+      "name": "foremanos-llm",
+      "source": "./plugins/foremanos-llm",
+      "description": "ForemanOS LLM system patterns — multi-provider orchestration (Claude/OpenAI/Gemini), three-pass vision pipeline, RAG architecture with 25 modules, prompt template patterns. Includes llm-cost-analyzer agent."
+    },
+    {
+      "name": "foremanos-testing",
+      "source": "./plugins/foremanos-testing",
+      "description": "ForemanOS testing patterns — Vitest conventions (vi.hoisted, pool:forks, shared mocks), API route testing with session/Prisma mocking. Includes /test-coverage-report command."
+    },
+    {
+      "name": "foremanos-documents",
+      "source": "./plugins/foremanos-documents",
+      "description": "ForemanOS document patterns — PDF generation (react-pdf, pdf-lib, pdfkit), Office documents (docxtemplater, xlsx-populate), file storage with Cloudflare R2 via S3-compat SDK."
     }
   ]
 }

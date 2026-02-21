@@ -1,0 +1,14 @@
+{
+  "name": "foremanos-stack",
+  "version": "1.0.0",
+  "description": "ForemanOS stack patterns — Prisma 6.7, NextAuth RBAC, Redis caching, data fetching, Trigger.dev tasks",
+  "author": { "name": "ForemanOS" },
+  "skills": [
+    "./skills/prisma-patterns",
+    "./skills/nextauth-rbac",
+    "./skills/redis-caching",
+    "./skills/swr-data-fetching",
+    "./skills/trigger-dev-tasks"
+  ],
+  "hooks": "./hooks/hooks.json"
+}
