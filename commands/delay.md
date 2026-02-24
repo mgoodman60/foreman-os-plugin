@@ -164,7 +164,7 @@ Generate a professional delay impact report (.docx format):
 9. **Delay Claim Documentation Template** (if compensable delays present):
    - Recommended structure for documenting causation and damages
    - Reference to delay events and responsible parties
-10. Save to `{{folder_mapping.reports}}/Delay_Impact_Report_[YYYYMMDD].docx`
+10. Save to `folder_mapping.reports/Delay_Impact_Report_[YYYYMMDD].docx`
 11. Confirm file location to user
 
 ### Step 6: Save & Log

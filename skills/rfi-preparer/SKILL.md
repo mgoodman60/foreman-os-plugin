@@ -136,9 +136,9 @@ Match work type to specification references:
 
 ### Team Distribution
 Auto-fill routing and contact information:
-- Read `directory.json` → `project_team[]` → auto-fill architect, engineer, and owner representative contacts for the RFI routing fields
+- Read `project-config.json` → `project_basics` → auto-fill architect, engineer, project manager, and owner representative contacts for the RFI routing fields
 - Read `directory.json` → `subcontractors[]` → identify the affected sub for CC distribution
-- Example: Structural question → Route to SE (from project_team), CC to Alexander Construction (PEMB sub)
+- Example: Structural question → Route to SE (from project_basics), CC to Alexander Construction (PEMB sub)
 
 ### Numbering Sequence
 Maintain sequential numbering automatically:

@@ -42,7 +42,7 @@ If a file is missing entirely, record that the KPI cannot be calculated. Do not 
 
 ### Step 2: Calculate KPIs
 
-For each of the 8 KPIs, calculate the current value using the formulas and tier boundaries defined in `alert-thresholds.md` Section 1. The specific data sources, formulas, and tier ranges are all defined there. This step summarizes the calculation approach for each:
+For each of the 11 KPIs, calculate the current value using the formulas and tier boundaries defined in `alert-thresholds.md` Section 1. The specific data sources, formulas, and tier ranges are all defined there. This step summarizes the calculation approach for each:
 
 1. **SPI** -- Read `schedule.json` earned value fields. Calculate SPI = BCWP / BCWS. Cross-validate against `cost-data.json` earned value if available.
 2. **CPI** -- Read `cost-data.json` earned value fields. Calculate CPI = BCWP / ACWP. Cross-validate against `schedule.json` if available.

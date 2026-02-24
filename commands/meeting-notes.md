@@ -51,7 +51,7 @@ Validate meeting_type against skill definitions
 
 ### Step 4: Auto-Assign Meeting Number & Date
 ```
-Load meeting_log from config.meeting_log
+Load meeting_log from meeting-log.json
 Count existing meetings: count = length(meeting_log.meetings)
 Auto-assign: meeting_id = "MTG-" + zero_padded(count + 1, 3)
   Example: MTG-001, MTG-002, MTG-003

@@ -13,7 +13,7 @@ Detect, track, and resolve cross-discipline conflicts across your project's extr
 ## Skills Referenced
 - `${CLAUDE_PLUGIN_ROOT}/skills/document-intelligence/references/conflict-detection-rules.md` — 25 codified detection rules (CDR-01 through CDR-25) with field paths, tolerances, and severity classifications
 - `${CLAUDE_PLUGIN_ROOT}/skills/project-data/SKILL.md` — Project data access and JSON file locations
-- `${CLAUDE_PLUGIN_ROOT}/skills/project-data/references/cross-reference-patterns.md` — 7 cross-reference patterns for data chain validation
+- `${CLAUDE_PLUGIN_ROOT}/skills/project-data/references/cross-reference-patterns.md` — 12 cross-reference patterns for data chain validation
 
 ## Agent Delegation
 

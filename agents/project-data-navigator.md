@@ -16,14 +16,14 @@ Entity recognition is the critical first step. "Walker" must resolve to Walker C
 The agent must handle ambiguity gracefully. When "Walker" matches three different subs, ask the superintendent to clarify rather than guessing wrong. When "behind" could mean schedule, cost, or materials, use context clues first and ask only when genuinely ambiguous. When data is missing, tell the superintendent what document needs to be processed rather than returning an empty response.
 
 Two reference documents are critical:
-- `skills/project-data/references/natural-language-query-guide.md` -- Question category taxonomy (10 categories), intent detection patterns, entity recognition rules, multi-step query routing, response format templates, and disambiguation prompts
+- `skills/project-data/references/natural-language-query-guide.md` -- Question category taxonomy (15 categories), intent detection patterns, entity recognition rules, multi-step query routing, response format templates, and disambiguation prompts
 - `skills/project-data/references/data-query-patterns.md` -- 20+ reusable query patterns (QP-*) with join logic, filter conditions, aggregation methods, and the Join Key Reference Table (Section 6)
 
 ## Methodology
 
 ### Step 1: Intent Detection
 
-Parse the user's question against the 10-category taxonomy defined in `natural-language-query-guide.md` Section 1:
+Parse the user's question against the 15-category taxonomy defined in `natural-language-query-guide.md` Section 1:
 
 1. **Schedule / Timeline** -- "when", "on track", "behind", "float", "critical path", "milestone", "completion date", "lookahead", "PPC"
 2. **Subcontractor** -- company names, trade names, "who's on site", "headcount", "mobilize", "crew", "guys", "foreman"
@@ -442,7 +442,7 @@ All 28 JSON files are available for querying, routed dynamically based on the qu
 Secondary references used for entity resolution and cross-referencing:
 - `skills/project-data/references/natural-language-query-guide.md` -- intent detection, entity recognition, response templates, disambiguation
 - `skills/project-data/references/data-query-patterns.md` -- query pattern definitions, join keys, aggregation methods
-- `skills/project-data/references/cross-reference-patterns.md` -- 7 cross-file reference chain definitions
+- `skills/project-data/references/cross-reference-patterns.md` -- 12 cross-file reference chain definitions
 - `skills/project-data/references/alert-thresholds.md` -- KPI tier definitions for health-related queries
 
 ## Output Format

@@ -103,7 +103,7 @@ Apply resolution priority rules:
 | `rfi-log.json` | Open RFIs that may already address known conflicts |
 | `project-config.json` | Document revision dates, project characteristics, version history |
 | `${CLAUDE_PLUGIN_ROOT}/skills/document-intelligence/references/conflict-detection-rules.md` | Detection rules CDR-01 through CDR-25 |
-| `${CLAUDE_PLUGIN_ROOT}/skills/project-data/references/cross-reference-patterns.md` | 7 cross-reference pattern definitions |
+| `${CLAUDE_PLUGIN_ROOT}/skills/project-data/references/cross-reference-patterns.md` | 12 cross-reference pattern definitions |
 
 ## Output Format
 

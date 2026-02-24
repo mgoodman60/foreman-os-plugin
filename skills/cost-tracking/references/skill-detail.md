@@ -477,10 +477,10 @@ ALERTS:
 
 ## Data Store Storage Location
 
-- **File**: `{{folder_mapping.ai_output}}/cost-data.json`
+- **File**: `folder_mapping.ai_output/cost-data.json`
 - **Section**: Root-level `budget`, `actuals`, `forecasts`, `change_order_costs`, `contingency`, `monthly_trends`, `cash_flow`
 - **Related Files**: pay-app-log.json (billing), change-order-log.json (CO costs), procurement-log.json (committed), schedule.json (% complete)
-- **Backup**: Timestamped backups in `{{folder_mapping.config}}/backups/cost-data_[TIMESTAMP].json`
+- **Backup**: Timestamped backups in `folder_mapping.ai_output/backups/cost-data_[TIMESTAMP].json`
 
 
 

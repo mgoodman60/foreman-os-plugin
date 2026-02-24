@@ -138,7 +138,7 @@ The CO Log is a professional archival document suitable for owner distribution a
 ### Document Format
 - **Format**: Microsoft Word (.docx)
 - **Filename**: `CO_Log_[YYYYMMDD].docx` (timestamp at generation)
-- **Location**: `{{folder_mapping.change_orders}}/`
+- **Location**: `folder_mapping.change_orders/`
 
 ### Table Contents
 Main table contains one row per CO with columns:
@@ -212,10 +212,10 @@ Includes:
 ## Configuration & Storage
 
 ### Storage Location
-- **File**: `{{folder_mapping.config}}/change-order-log.json`
+- **File**: `folder_mapping.ai_output/change-order-log.json`
 - **Section**: `change_order_log` array
-- **Project Config Reference**: `{{folder_mapping.config}}/project-config.json` (for project_basics, folder_mapping, version_history)
-- **Backup**: Each save creates timestamped backup in `{{folder_mapping.config}}/backups/`
+- **Project Config Reference**: `folder_mapping.ai_output/project-config.json` (for project_basics, folder_mapping, version_history)
+- **Backup**: Each save creates timestamped backup in `folder_mapping.ai_output/backups/`
 
 ### Version History
 - All CO additions, status changes logged in `project-config.json` `version_history` array with:
@@ -252,9 +252,9 @@ Includes:
 
 All generated documents route to project folder structure:
 - **CO Records**: Stored in `change-order-log.json` `change_order_log` array
-- **CO Log Documents**: `{{folder_mapping.change_orders}}/CO_Log_[YYYYMMDD].docx`
+- **CO Log Documents**: `folder_mapping.change_orders/CO_Log_[YYYYMMDD].docx`
 - **Version History**: Logged in `project-config.json` `version_history` array
-- **Backup Copies**: `{{folder_mapping.config}}/backups/change-order-log_[TIMESTAMP].json`
+- **Backup Copies**: `folder_mapping.ai_output/backups/change-order-log_[TIMESTAMP].json`
 
 ## Project Intelligence Integration
 
@@ -406,7 +406,7 @@ When quantities or costs are contested:
 
 ### T&M Storage & Reporting
 
-- **Storage Location**: `{{folder_mapping.config}}/tm-tags.json` with `tm_tags` array
+- **Storage Location**: `folder_mapping.ai_output/tm-tags.json` with `tm_tags` array
 - **Morning Brief**: Surface pending T&M tags (submitted but not yet incorporated) with totals
 - **Daily Report**: Reference T&M work performed during the day
 - **CO Log**: Include summary of incorporated T&M work with references to tag IDs

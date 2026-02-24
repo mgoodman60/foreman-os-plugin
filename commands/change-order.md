@@ -109,7 +109,7 @@ Generate a professional CO Log document (.docx format):
    - Total Cost Impact (approved + pending)
    - Total Schedule Impact (days)
    - Cost by Originator
-4. Save to `{{folder_mapping.change_orders}}/CO_Log_[YYYYMMDD].docx`
+4. Save to `folder_mapping.change_orders/CO_Log_[YYYYMMDD].docx`
 5. Confirm file location to user
 
 ### Step 6: Save & Log

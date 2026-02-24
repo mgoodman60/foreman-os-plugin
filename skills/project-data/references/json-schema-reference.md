@@ -983,6 +983,29 @@ Document annotation tracking — annotation records, annotation sets, symbol lib
 
 ---
 
+## 29. tm-tags.json
+
+Time & Material tag tracking for field work that may generate change orders. Created by the change-order-tracker skill's T&M workflow.
+
+### `tm_tags[]`
+| Field | Type | Description | Producers | Consumers |
+|-------|------|-------------|-----------|-----------|
+| `id` | string | TM-NNN identifier | `change-order-tracker` | `change-order-tracker`, `cost-tracking` |
+| `date` | string | ISO 8601 date work was performed | `change-order-tracker` | `cost-tracking`, `/daily-report` |
+| `description` | string | Narrative of work performed | `change-order-tracker` | `/daily-report`, `/weekly-report` |
+| `subcontractor` | string | Responsible trade contractor | `change-order-tracker` | `sub-performance`, `cost-tracking` |
+| `labor[]` | array | Labor entries: worker_count, hours, trade, rate | `change-order-tracker` | `labor-tracking`, `cost-tracking` |
+| `materials[]` | array | Material entries: item, quantity, unit, cost | `change-order-tracker` | `cost-tracking` |
+| `equipment[]` | array | Equipment entries: item, hours, rate | `change-order-tracker` | `cost-tracking` |
+| `superintendent_signature` | boolean | Field superintendent approval | `change-order-tracker` | — |
+| `sub_signature` | boolean | Sub foreman approval | `change-order-tracker` | — |
+| `photos[]` | array | Time-stamped photo file paths | `change-order-tracker` | `/daily-report` |
+| `linked_co` | string | CO-NNN reference if incorporated | `change-order-tracker` | `change-order-tracker` |
+| `status` | string | draft / field_signed / submitted_to_gc / incorporated_in_co / disputed | `change-order-tracker` | `/morning-brief`, `cost-tracking` |
+| `notes` | string | Disputes, clarifications, processing notes | `change-order-tracker` | — |
+
+---
+
 ## Cross-File Relationship Summary
 
 ```

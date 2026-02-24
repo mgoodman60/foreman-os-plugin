@@ -455,7 +455,7 @@ Aggregate actual expenditures from multiple sources:
 
 ### Earned Value (BCWP)
 Calculate earned value from progress and baseline:
-- Read `cost-data.json` → `percent_complete_by_division[]` → multiply each division's budget × percent complete
+- Read `cost-data.json` → `budget_by_division[].percent_complete` → multiply each division's budget × percent complete
 - Read `schedule.json` → `percent_complete` → validate overall earned value aligns with schedule progress
 - Cross-reference `daily-report-data.json` → work completed entries → ground-truth percent complete against field observations
 

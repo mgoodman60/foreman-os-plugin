@@ -45,7 +45,7 @@ Agents are autonomous definitions in `agents/` with YAML frontmatter (`name`, `d
 |-------|------|
 | superintendent-assistant | Top-level router to the 10 specialized agents below |
 | data-integrity-watchdog | Validates consistency across all 28 JSON files |
-| project-health-monitor | Evaluates 8 KPIs and 5 anomaly detection rules |
+| project-health-monitor | Evaluates 11 KPIs and 5 anomaly detection rules |
 | dashboard-intelligence-analyst | Generates dashboard views and executive briefings |
 | project-data-navigator | Translates natural language questions to data queries |
 | deadline-sentinel | Monitors all deadline sources with 6-tier urgency |
@@ -99,7 +99,7 @@ The `project-data` skill has ten reference documents in `skills/project-data/ref
 - **`skill-detail.md`** — Detailed skill capability mapping
 
 #### Downstream Skill Auto-Population
-Eighteen downstream skills have explicit "Project Intelligence Integration" (or "Auto-Population" / "Auto-Linking") sections that tell the AI exactly which JSON files and field paths to read for auto-populating data. This eliminates guesswork — each skill names its data sources:
+Twenty downstream skills have explicit "Project Intelligence Integration" (or "Auto-Population" / "Auto-Linking") sections that tell the AI exactly which JSON files and field paths to read for auto-populating data. This eliminates guesswork — each skill names its data sources:
 - `punch-list` — location from plans-spatial, sub from directory, spec cross-ref, drawing ref, schedule impact
 - `inspection-tracker` — hold points from specs-quality, weather check, spec deep-link, schedule activity, drawing ref
 - `safety-management` — weather alerts from specs-quality, safety zones, utility locations, sub safety performance
@@ -110,7 +110,7 @@ Eighteen downstream skills have explicit "Project Intelligence Integration" (or 
 - `intake-chatbot` — spec enrichment, schedule awareness, weather-work cross-check, quantity context, inspection reminders
 - `earned-value-management` — budget baseline from cost-data, schedule baseline from schedule.json, actual costs from labor-tracking + procurement-log, earned value from cost-data percent complete, CO adjustments, forecast validation against delay-log
 - `rfi-preparer` — location from plans-spatial, drawing refs from sheet_cross_references, spec section from specs-quality, team routing from directory, numbering from rfi-log, related items cross-ref
-- `quality-management` — spec-based checklists from specs-quality, hold points, location from plans-spatial, sub QC contact from directory, FPIR trends from quality-data, drawing refs
+- `quality-management` — spec-based checklists from specs-quality, hold points, location from plans-spatial, sub QC contact from directory, FPIR trends from quality-data, drawing refs, material test result verification from quality-data test_results (concrete, steel, soil, welding), specimen traceability against procurement-log delivery_tickets
 - `risk-management` — schedule risks from schedule.json critical path/float, weather thresholds from specs-quality, sub performance from directory + quality-data, contingency context from cost-data, delay patterns from delay-log, procurement risks from procurement-log
 - `last-planner` — activity pool from schedule.json, sub availability from directory + labor-tracking, location constraints from plans-spatial, weather from specs-quality thresholds, material readiness from procurement-log, prerequisite inspections from specs-quality hold points + inspection-log
 - `sub-performance` — sub roster from directory, schedule adherence from daily-report-data + schedule.json + labor-tracking, quality from inspection-log + quality-data + punch-list, safety from safety-log, responsiveness from rfi-log + submittal-log, productivity from labor-tracking
@@ -120,7 +120,6 @@ Eighteen downstream skills have explicit "Project Intelligence Integration" (or 
 - `submittal-intelligence` — procurement lead time from procurement-log, sub contact from directory, hold point linking from specs-quality, cost impact from cost-data, quality test correlation from quality-data, installation verification from daily-report-data
 - `closeout-commissioning` — warranty tracking from quality-data warranties, commissioning test results from quality-data system_tests, O&M manual completeness from quality-data equipment_data, as-built drawing status from plans-spatial as_built_overlay
 - `drawing-control` — as-built markup status per sheet in drawing-log, deviation cross-reference against rfi-log and change-order-log, closeout completeness flagging, links to as-built-extraction.md
-- `quality-management` — material test result verification from quality-data test_results (concrete, steel, soil, welding), specimen traceability against procurement-log delivery_tickets
 
 ### Python Reference Scripts and Executable Scripts
 Five Python files exist under `skills/document-intelligence/references/` and `skills/quantitative-intelligence/references/` — these are reference implementations for visual plan analysis, sheet cross-referencing, and calculation bridging. They are not executed directly by the plugin but serve as reference code for the AI.

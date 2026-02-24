@@ -139,7 +139,7 @@ Location: Room 107 (Therapy)
 
 ### Files to Read
 1. `specs-quality.json` → `weather_thresholds[]` — match by work type
-2. `daily-report-intake.json` or daily report weather data — today's conditions
+2. `daily-report-intake.json` or daily report weather data — today's conditions. **Note:** `daily-report-intake.json` is only populated during active `/log` sessions; fall back to `daily-report-data.json` (most recent entry's weather section) outside active sessions.
 3. `specs-quality.json` → `spec_sections[match].weather_thresholds` — section-specific limits
 
 ### Fields to Extract

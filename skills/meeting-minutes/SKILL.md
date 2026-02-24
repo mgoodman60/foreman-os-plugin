@@ -260,11 +260,11 @@ Transition reports include:
 folder_mapping.oac_reports / "meeting_minutes" / "meeting_minutes_MTG-001_2025-02-17_OAC.docx"
 ```
 
-### Structured Data (Project Config)
+### Structured Data
 ```
-config.meeting_log           → All meetings, indexed by meeting_id
-config.action_item_log       → All action items, indexed by action_id
-config.last_meeting_date     → Date of most recent meeting
+meeting-log.json → meetings[]          → All meetings, indexed by meeting_id
+meeting-log.json → action_items[]      → All action items, indexed by action_id
+meeting-log.json → last_meeting_date   → Date of most recent meeting
 ```
 
 ## Workflow Summary

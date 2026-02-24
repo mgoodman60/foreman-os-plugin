@@ -124,6 +124,9 @@ BIM coordination for field operations — clash detection review, model-to-field
 #### `/annotate [plan|spec|photo|rfi] [reference]`
 Document annotation and markup — plan redlines, spec highlighting, photo callouts, RFI markup packages, and as-built annotations with discipline color coding.
 
+#### `/conflicts [scan|status|resolve|history]`
+Cross-discipline conflict detection and resolution tracking. Compares plans vs. specs, specs vs. schedule, drawing vs. drawing, cost vs. scope, and dual-source data to catch discrepancies before they become expensive field problems. Tracks conflicts from detection through resolution with full audit trail.
+
 ### Field Documentation
 
 #### `/meeting-notes [type]`

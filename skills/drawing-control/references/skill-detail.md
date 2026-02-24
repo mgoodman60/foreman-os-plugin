@@ -260,7 +260,7 @@ The drawing log is stored as a JSON file in the Foreman OS AI output folder, mak
 ### Storage Location
 
 ```
-{{folder_mapping.ai_output}}/drawing-log.json
+folder_mapping.ai_output/drawing-log.json
 ```
 
 ### Example drawing-log.json (4-Drawing Sample)
@@ -697,7 +697,7 @@ Specification Sources:
 ### System Requirements
 
 - **Data Format**: JSON (UTF-8)
-- **Storage**: File-based at {{folder_mapping.ai_output}}/drawing-log.json
+- **Storage**: File-based at folder_mapping.ai_output/drawing-log.json
 - **File Size Handling**: Supports up to 500+ drawings per log (typical max for most projects)
 - **API Integration**: RESTful read/write via Foreman OS skill interface
 - **Backup**: Auto-backup triggered on each update (versioned snapshots)

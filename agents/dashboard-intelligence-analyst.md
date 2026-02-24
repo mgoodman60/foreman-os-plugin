@@ -50,7 +50,7 @@ Execute query patterns from `data-query-patterns.md` based on dashboard type. Fo
 
 ### Step 3: Pull KPI Snapshot
 
-Calculate all 8 KPIs using formulas from `alert-thresholds.md` Section 1 (same calculations as project-health-monitor):
+Calculate all 11 KPIs using formulas from `alert-thresholds.md` Section 1 (same calculations as project-health-monitor):
 
 1. **SPI** -- BCWP / BCWS from `schedule.json` earned_value. Cross-validate against `cost-data.json`.
 2. **CPI** -- BCWP / ACWP from `cost-data.json` earned_value. Cross-validate against `schedule.json`.
@@ -243,7 +243,7 @@ FORWARD LOOK:
 
 - **Confirm ambiguous custom queries.** If "how are we doing on time" could mean SPI, critical path, milestones, or PPC, clarify before executing.
 
-- **Keep narratives factual.** "SPI is 1.02 and all 8 KPIs are within healthy ranges" not "the project is doing well." Recommendations must be specific: "Review Division 03 cost coding with the accountant before the next pay app."
+- **Keep narratives factual.** "SPI is 1.02 and all 11 KPIs are within healthy ranges" not "the project is doing well." Recommendations must be specific: "Review Division 03 cost coding with the accountant before the next pay app."
 
 - **Order alerts by severity then domain.** Safety first, then Schedule, Cost, Quality, Workforce, Procurement. Highest severity first within each domain.
 

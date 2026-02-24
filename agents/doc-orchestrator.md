@@ -92,7 +92,7 @@ Run the 16 cross-file checks (XF-01 to XF-16) from Section 5 of the checklist af
 
 ### Step 5: Verify Cross-Reference Pattern Integrity
 
-Verify all 7 patterns from `skills/project-data/references/cross-reference-patterns.md`:
+Verify all 12 patterns from `skills/project-data/references/cross-reference-patterns.md`:
 
 1. **Sub -> Scope -> Spec -> Inspection**: Active subs map to spec divisions and hold points
 2. **Location -> Grid -> Area -> Room**: Rooms resolve to building areas and grid ranges
@@ -112,7 +112,7 @@ Per-file confidence = weighted average (required fields 2x, optional 1x). Tiers:
 
 ### Step 7: Produce Extraction Report
 
-Generate a scannable report: summary counts, classification table, files updated, validation results by pass, issues by severity (HIGH/MEDIUM/LOW), confidence scores per file, cross-reference pattern status (X/7 intact), and prioritized next actions (REQUIRED/RECOMMENDED/OPTIONAL/INFORMATIONAL).
+Generate a scannable report: summary counts, classification table, files updated, validation results by pass, issues by severity (HIGH/MEDIUM/LOW), confidence scores per file, cross-reference pattern status (X/12 intact), and prioritized next actions (REQUIRED/RECOMMENDED/OPTIONAL/INFORMATIONAL).
 
 ## Data Sources
 
@@ -123,7 +123,7 @@ Generate a scannable report: summary counts, classification table, files updated
 | `extraction-validation-checklist.md` | Check definitions, population matrices, confidence scoring, error remediation |
 | `data-flow-map.md` | Pipeline architecture, producer/consumer mapping |
 | `json-schema-reference.md` | Schema definitions for field type validation |
-| `cross-reference-patterns.md` | Seven pattern definitions for post-extraction verification |
+| `cross-reference-patterns.md` | Twelve pattern definitions for post-extraction verification |
 
 ## Output Format
 
@@ -166,7 +166,7 @@ CONFIDENCE SCORES:
 | plans-spatial.json | 78% | Medium | Mixed sources, 1 conflict |
 | schedule.json | 96% | High | Structured P6 export |
 
-CROSS-REFERENCE PATTERNS: 6/7 intact
+CROSS-REFERENCE PATTERNS: 11/12 intact
 - Pattern 4 (Assembly -> MultiSheet): PARTIAL -- CHAIN-004 incomplete
 - Pattern 7 (DualSource): 1 CONFLICT -- SD-03 pipe size
 

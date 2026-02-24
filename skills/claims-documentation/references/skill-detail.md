@@ -865,11 +865,11 @@ For hearings, organize into binder sets:
 ## Output Routing
 
 All generated documents route to project folder structure:
-- **Claims Log**: Stored in `{{folder_mapping.config}}/claims-log.json`
-- **Notice Letters**: `{{folder_mapping.correspondence}}/Notices/NOTICE-NNN_[type]_[date].docx`
-- **Claims Packages**: `{{folder_mapping.reports}}/Claims/CLAIM-NNN_Package_[date].docx`
-- **Evidence Exports**: `{{folder_mapping.reports}}/Claims/Evidence/[exhibit_letter]_[description].pdf`
+- **Claims Log**: Stored in `folder_mapping.ai_output/claims-log.json`
+- **Notice Letters**: `folder_mapping.correspondence/Notices/NOTICE-NNN_[type]_[date].docx`
+- **Claims Packages**: `folder_mapping.reports/Claims/CLAIM-NNN_Package_[date].docx`
+- **Evidence Exports**: `folder_mapping.reports/Claims/Evidence/[exhibit_letter]_[description].pdf`
 - **Version History**: Logged in `project-config.json` `version_history` array
-- **Backup Copies**: `{{folder_mapping.config}}/backups/claims-log_[TIMESTAMP].json`
+- **Backup Copies**: `folder_mapping.ai_output/backups/claims-log_[TIMESTAMP].json`
 
 

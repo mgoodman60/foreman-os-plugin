@@ -1227,10 +1227,10 @@ User confirmation:
 ## Storage & Configuration
 
 ### Storage Location
-- **File**: `{{folder_mapping.config}}/delay-log.json`
+- **File**: `folder_mapping.ai_output/delay-log.json`
 - **Section**: `delays` array
-- **Project Config Reference**: `{{folder_mapping.config}}/project-config.json` (for project_basics, folder_mapping, version_history)
-- **Backup**: Each save creates timestamped backup in `{{folder_mapping.config}}/backups/`
+- **Project Config Reference**: `folder_mapping.ai_output/project-config.json` (for project_basics, folder_mapping, version_history)
+- **Backup**: Each save creates timestamped backup in `folder_mapping.ai_output/backups/`
 
 ### Version History
 All delay additions, status updates logged in `project-config.json` `version_history` array with:
@@ -1282,8 +1282,8 @@ All delay additions, status updates logged in `project-config.json` `version_his
 
 All generated documents route to project folder structure:
 - **Delay Records**: Stored in `delay-log.json` `delays` array
-- **Delay Reports**: `{{folder_mapping.reports}}/Delay_Impact_Report_[YYYYMMDD].docx`
+- **Delay Reports**: `folder_mapping.reports/Delay_Impact_Report_[YYYYMMDD].docx`
 - **Version History**: Logged in `project-config.json` `version_history` array
-- **Backup Copies**: `{{folder_mapping.config}}/backups/delay-log_[TIMESTAMP].json`
+- **Backup Copies**: `folder_mapping.ai_output/backups/delay-log_[TIMESTAMP].json`
 
 

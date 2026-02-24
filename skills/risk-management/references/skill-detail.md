@@ -826,10 +826,10 @@ The risk-management skill connects with other ForemanOS skills to create a compr
 ## Storage & Configuration
 
 ### Storage Location
-- **File**: `{{folder_mapping.config}}/risk-register.json`
+- **File**: `folder_mapping.ai_output/risk-register.json`
 - **Section**: `risk_register` object containing `risks` array, `closed_risks` array, `contingency_budget` object
-- **Project Config Reference**: `{{folder_mapping.config}}/project-config.json` (for project_basics, folder_mapping, version_history)
-- **Backup**: Each save creates timestamped backup in `{{folder_mapping.config}}/backups/`
+- **Project Config Reference**: `folder_mapping.ai_output/project-config.json` (for project_basics, folder_mapping, version_history)
+- **Backup**: Each save creates timestamped backup in `folder_mapping.ai_output/backups/`
 
 ### Version History
 All risk register changes logged in `project-config.json` `version_history` array with:
@@ -840,9 +840,9 @@ All risk register changes logged in `project-config.json` `version_history` arra
 
 ### Output Routing
 - **Risk Records**: Stored in `risk-register.json` `risks` array
-- **Risk Reports**: `{{folder_mapping.reports}}/Risk_Report_[YYYYMMDD].docx`
-- **Risk Matrix**: `{{folder_mapping.reports}}/Risk_Matrix_[YYYYMMDD].docx`
+- **Risk Reports**: `folder_mapping.reports/Risk_Report_[YYYYMMDD].docx`
+- **Risk Matrix**: `folder_mapping.reports/Risk_Matrix_[YYYYMMDD].docx`
 - **Version History**: Logged in `project-config.json` `version_history` array
-- **Backup Copies**: `{{folder_mapping.config}}/backups/risk-register_[TIMESTAMP].json`
+- **Backup Copies**: `folder_mapping.ai_output/backups/risk-register_[TIMESTAMP].json`
 
 

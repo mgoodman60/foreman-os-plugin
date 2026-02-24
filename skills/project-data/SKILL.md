@@ -42,7 +42,18 @@ All JSON files are stored in `folder_mapping.ai_output` (typically `AI - Project
 | `delay-log.json` | Delay event tracking | delay_events array, weather_delays, owner_delays, claims documentation |
 | `labor-tracking.json` | Labor hours and crew productivity | labor_entries array, crew_summaries, productivity_ratios, classifications |
 | `quality-data.json` | Quality inspections and deficiency tracking | inspections array, deficiencies, corrective_actions, quality_metrics |
+| `safety-log.json` | Safety incidents, OSHA records, toolbox talks, corrective actions | incidents array, osha_300_log, toolbox_talks, corrective_actions |
+| `cost-data.json` | Budget structure, cost tracking, variance analysis, cash flow | budget_by_division array, contingency, earned_value, forecast |
 | `daily-report-data.json` | Report history — the running record that feeds dashboard and weekly reports | Structured data from every generated daily report |
+| `daily-report-intake.json` | Running intake log for the current day | Intake entries from `/log` sessions |
+| `visual-context.json` | Site context for AI rendering generation | site_photos, design_intent, material_selections |
+| `rendering-log.json` | Generated rendering history and prompt records | renderings array |
+| `drawing-log.json` | Drawing revision control, ASI tracking, current set status | drawings array, asi_log, distribution_log |
+| `closeout-data.json` | Closeout tracking, commissioning status, warranty management | closeout_items, commissioning_status, warranty_items |
+| `risk-register.json` | Risk entries with probability/impact scoring and mitigation plans | risks array, mitigation_plans, contingency_tracking |
+| `claims-log.json` | Claims documentation, notice records, evidence tracking | claims array, notice_records, evidence_items |
+| `environmental-log.json` | LEED credits, SWPPP compliance, waste diversion, hazmat | leed_credits, swppp, waste_diversion, hazmat |
+| `annotation-log.json` | Document annotations, markup history, distribution tracking | annotations array, distribution_log |
 
 ### File Lookup Table
 
@@ -164,7 +175,7 @@ daily-report-data.json
 
 ## Smart Retrieval
 
-When a skill needs project data, it should only load the specific files it needs — never all 13 files at once.
+When a skill needs project data, it should only load the specific files it needs — never all 28 files at once.
 
 ### Retrieval by Work Type
 

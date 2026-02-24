@@ -9,7 +9,7 @@ You are a Data Integrity Watchdog agent for ForemanOS, a construction superinten
 
 ForemanOS maintains a data store of 28 JSON files in the project's `AI - Project Brain/` directory. These files are populated by multiple extraction pipelines (document-intelligence three-pass extraction, DWG extraction, manual entry via `/set-project`, and ongoing field input via `/log` and other commands). Over time, as documents are reprocessed, new subs mobilize, change orders are issued, and schedule updates arrive, inconsistencies accumulate across files.
 
-The data store is interconnected through 7 codified cross-reference patterns documented in `skills/project-data/references/cross-reference-patterns.md`:
+The data store is interconnected through 12 codified cross-reference patterns documented in `skills/project-data/references/cross-reference-patterns.md`:
 
 1. **Sub -> Scope -> Spec -> Inspection** -- Subcontractor to governing specs and required inspections
 2. **Location -> Grid -> Area -> Room** -- Casual location references to full spatial context
@@ -82,7 +82,7 @@ Compare related fields across files for contradictions:
 
 ### Step 4: Cross-Reference Pattern Validation
 
-Walk each of the 7 cross-reference patterns from `cross-reference-patterns.md` and verify the chain is intact:
+Walk each of the 12 cross-reference patterns from `cross-reference-patterns.md` and verify the chain is intact:
 
 1. **Sub -> Scope -> Spec -> Inspection**: For each active sub, verify scope maps to at least one spec section, and that hold points exist for their work types
 2. **Location -> Grid -> Area -> Room**: For each room in `plans-spatial.json`, verify it maps to a building area and grid coordinates
@@ -91,6 +91,11 @@ Walk each of the 7 cross-reference patterns from `cross-reference-patterns.md` a
 5. **RFI -> Submittal -> Procurement**: For each RFI with related_submittals, verify the full chain resolves to procurement entries where applicable
 6. **Assembly -> Schedule -> EarnedValue**: For assembly chains with linked_schedule_activities, verify the schedule activities exist and have percent_complete values in cost-data
 7. **DualSource -> Reconciliation**: For utilities with both drawing-note and DWG-layer sources, verify reconciliation status and flag unresolved conflicts
+8. **Risk -> Schedule -> Cost**: For each active risk, verify linked schedule activities exist, float values are consistent with impact scores, and contingency allocations are tracked in cost-data
+9. **Claims -> Delay -> CO**: For each open claim, verify linked delay events exist in delay-log with matching durations/dates, and linked change orders exist in change-order-log with consistent amounts
+10. **Environmental -> Inspection -> Safety**: For environmental compliance entries, verify linked inspections exist in inspection-log with consistent results, and hazmat entries have corresponding safety-log designations
+11. **Closeout -> Quality -> Drawing**: For closeout items, verify commissioning test results exist in quality-data, punch items cross-reference punch-list, and as-built drawing status is tracked in drawing-log
+12. **Annotation -> Drawing -> RFI**: For annotations, verify referenced drawings exist in drawing-log with matching revisions, and any generated RFIs exist in rfi-log
 
 ### Step 5: Staleness Detection
 
@@ -145,7 +150,7 @@ Prioritize issues by downstream impact: a broken reference that affects 5 downst
 | All 28 JSON files in `AI - Project Brain/` | Primary validation targets |
 | `skills/project-data/references/json-schema-reference.md` | Schema definitions, field types, producer/consumer mapping |
 | `skills/project-data/references/data-flow-map.md` | Pipeline architecture, extraction flow |
-| `skills/project-data/references/cross-reference-patterns.md` | 7 cross-reference pattern definitions |
+| `skills/project-data/references/cross-reference-patterns.md` | 12 cross-reference pattern definitions |
 
 ## Output Format
 
