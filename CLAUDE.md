@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-This is **foreman-os-marketplace**, a cowork plugin marketplace repository containing the **Foreman_OS** plugin (v4.1.0) — a construction superintendent operating system with 42 skills, 37 commands, and 21 field-reference documents. It runs as a plugin inside the cowork platform.
+This is **foreman-os-marketplace**, a cowork plugin marketplace repository containing the **Foreman_OS** plugin (v4.2.0) — a construction superintendent operating system with 42 skills, 37 commands, 10 agents, and 21 field-reference documents. It runs as a plugin inside the cowork platform.
 
 ## Repository Structure
 
@@ -12,7 +12,8 @@ This is **foreman-os-marketplace**, a cowork plugin marketplace repository conta
 .claude-plugin/
   marketplace.json                 — Marketplace manifest (lists plugins)
   plugin.json                      — Plugin metadata (name, version, description)
-README.md                          — Full documentation of commands, skills, and data files
+README.md                          — Full documentation of commands, skills, agents, and data files
+agents/                            — 10 autonomous agents (monitoring, analysis, advisory)
 commands/                          — 37 slash-command definitions (markdown files)
 skills/                            — 42 skill directories, each with SKILL.md + references/ or scripts/
 plugins/                           — 4 Claude Code dev plugins (not used by Cowork)
@@ -37,9 +38,27 @@ Commands (in `commands/`) are the user-facing entry points (invoked as `/log`, `
 
 Example chain: `/log` command → reads `intake-chatbot` skill + `project-data` skill → classifies input → enriches with project intelligence → writes to `daily-report-intake.json`.
 
+### Agent System
+Agents are autonomous definitions in `agents/` with YAML frontmatter (`name`, `description`) and structured sections (Context, Methodology, Data Sources, Output Format, Constraints). They are auto-discovered from the directory — like commands and skills, no plugin.json registration needed.
+
+| Agent | Role |
+|-------|------|
+| superintendent-assistant | Top-level router to the 9 specialized agents below |
+| data-integrity-watchdog | Validates consistency across all 23 JSON files |
+| project-health-monitor | Evaluates 8 KPIs and 5 anomaly detection rules |
+| dashboard-intelligence-analyst | Generates dashboard views and executive briefings |
+| project-data-navigator | Translates natural language questions to data queries |
+| deadline-sentinel | Monitors all deadline sources with 6-tier urgency |
+| report-quality-auditor | 10 daily + 6 weekly QA checks on reports |
+| field-intelligence-advisor | Contextual briefings for field situations |
+| weekly-planning-coordinator | Last Planner System cycle with constraint analysis |
+| doc-orchestrator | Coordinates extraction pipelines and validates output |
+
+Agents are read-only — they query the 23-file data store but never modify data without user approval. They consume reference docs from `skills/project-data/references/` for thresholds, query patterns, and validation rules.
+
 ### Cowork vs Claude Code Plugins
-- The main `foreman-os` plugin (defined in `.claude-plugin/`) works in both Cowork and Claude Code
-- The 4 dev plugins under `plugins/` are Claude Code-only — they contain hooks, agents, and commands that require Claude Code's execution environment
+- The main `foreman-os` plugin (defined in `.claude-plugin/`) works in both Cowork and Claude Code — this includes all skills, commands, and agents
+- The 4 dev plugins under `plugins/` are Claude Code-only — they contain hooks that require Claude Code's execution environment
 - Do NOT install dev plugins in Cowork — they cause sandbox mount errors
 
 ### Key Conventions
@@ -59,10 +78,23 @@ Documents → `document-intelligence` skill (three-pass extraction) → structur
 - `cost-data.json`, `safety-log.json`, `labor-tracking.json`, `quality-data.json`, `daily-report-data.json`, `daily-report-intake.json`, `visual-context.json`, `rendering-log.json`, `drawing-log.json`
 
 #### Pipeline Reference Documentation
-The `project-data` skill has three reference documents that map the entire extraction pipeline:
-- **`skills/project-data/references/json-schema-reference.md`** — Complete schema for all 23 JSON files with producer/consumer mapping per field (which skills write, which skills read)
-- **`skills/project-data/references/data-flow-map.md`** — Pipeline architecture with ASCII diagrams: Documents → document-intelligence → JSON store → downstream skills, plus the DWG and quantitative pipelines
-- **`skills/project-data/references/cross-reference-patterns.md`** — Seven codified cross-referencing patterns (Sub→Scope→Spec→Inspection, Location→Grid→Area→Room, WorkType→Weather→Threshold, Element→AssemblyChain→MultiSheet, RFI→Submittal→Procurement, Assembly→Schedule→EarnedValue, DualSource→UtilityReconciliation)
+The `project-data` skill has ten reference documents in `skills/project-data/references/`:
+
+**Pipeline architecture (3):**
+- **`json-schema-reference.md`** — Complete schema for all 23 JSON files with producer/consumer mapping per field
+- **`data-flow-map.md`** — Pipeline architecture with ASCII diagrams: Documents → document-intelligence → JSON store → downstream skills
+- **`cross-reference-patterns.md`** — Seven codified cross-referencing patterns (Sub→Scope→Spec→Inspection, Location→Grid→Area→Room, WorkType→Weather→Threshold, Element→AssemblyChain→MultiSheet, RFI→Submittal→Procurement, Assembly→Schedule→EarnedValue, DualSource→UtilityReconciliation)
+
+**Agent-supporting (4 — consumed by agents for thresholds, queries, and validation):**
+- **`alert-thresholds.md`** — KPI thresholds, anomaly detection rules, and severity scoring for project-health-monitor and dashboard-intelligence-analyst agents
+- **`data-query-patterns.md`** — 20+ cross-file query patterns (QP-MAT-*, QP-SUB-*, QP-SCH-*, QP-LOC-*, QP-COST-*) with join logic for project-data-navigator
+- **`natural-language-query-guide.md`** — Maps superintendent questions to data queries with intent detection and entity recognition
+- **`extraction-validation-checklist.md`** — Post-extraction validation checklists for all 3 pipelines, consumed by doc-orchestrator
+
+**Other (3):**
+- **`config-schema.md`** — Project configuration schema and field definitions
+- **`report-history-schema.md`** — Daily report data structure and history format
+- **`skill-detail.md`** — Detailed skill capability mapping
 
 #### Downstream Skill Auto-Population
 Twenty-one downstream skills have explicit "Project Intelligence Integration" sections that tell the AI exactly which JSON files and field paths to read for auto-populating data. This eliminates guesswork — each skill names its data sources:
@@ -102,5 +134,7 @@ The `skills/dwg-extraction/scripts/` directory contains executable scripts that 
 When adding a **new command**: create a markdown file in `commands/` with YAML frontmatter (`description`, `allowed-tools`, `argument-hint`) and step-by-step instructions that reference the relevant skills.
 
 When adding a **new skill**: create a directory under `skills/<skill-name>/` with a `SKILL.md` (YAML frontmatter with `name`, `description`, `version`) and optionally a `references/` folder for supporting docs or scripts.
+
+When adding a **new agent**: create a markdown file in `agents/` with YAML frontmatter (`name`, `description`) and structured sections (Context, Methodology, Data Sources, Output Format, Constraints). Agents are auto-discovered from the directory — no plugin.json registration needed.
 
 When modifying the **plugin manifest**: update both `marketplace.json` and `plugin.json` (both in `.claude-plugin/`) if the description or metadata changes.

@@ -262,6 +262,26 @@ The plugin includes forty-one specialized skills:
 - **project-visual-context** — Visual context gathering for AI renderings including site context, design intent, and material selections
 - **image-generation-mcp** — MCP server implementation for AI image generation using Flux 2, Google Gemini, and SVG tools
 
+## Agents
+
+The plugin includes ten autonomous agents that monitor, analyze, and advise across the project intelligence data store. Agents are auto-discovered from the `agents/` directory.
+
+### Orchestration
+- **superintendent-assistant** — Top-level assistant that routes requests to the appropriate specialized agent, coordinates multi-agent workflows, and handles general project questions
+
+### Data & Monitoring
+- **data-integrity-watchdog** — Validates consistency across all 23 project intelligence JSON files — detects orphans, cross-file conflicts, schema gaps, staleness, and broken reference chains
+- **project-health-monitor** — Evaluates 8 project KPIs and 5 anomaly detection rules to generate health alerts and trend analysis
+- **dashboard-intelligence-analyst** — Generates project dashboard summaries, executive briefings, and narrative health reports by querying across all 23 JSON files
+- **project-data-navigator** — Translates natural language questions from superintendents into structured data queries across the 23-file project intelligence store
+- **deadline-sentinel** — Monitors all project deadlines across schedule milestones, submittal due dates, RFI response windows, procurement lead times, inspection prerequisites, and contract notice periods
+
+### Field & Workflow
+- **report-quality-auditor** — Automatically reviews daily and weekly reports for completeness, consistency, and accuracy against the full project data store
+- **field-intelligence-advisor** — Provides contextual field intelligence by pulling together relevant data from across the project store to support real-time superintendent decisions
+- **weekly-planning-coordinator** — Orchestrates the weekly lookahead planning cycle using Last Planner System principles — constraint analysis, PPC tracking, and weekly work plan generation
+- **doc-orchestrator** — Coordinates multi-document extraction runs, validates extraction output, and ensures data quality after processing
+
 ## Files
 
 The plugin creates these files in your working directory:
