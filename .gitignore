@@ -4,3 +4,4 @@ __pycache__/
 .mcpb-cache/
 .venv/
 .mcp.json
+.claude/

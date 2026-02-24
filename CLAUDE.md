@@ -126,6 +126,8 @@ Five Python files exist under `skills/document-intelligence/references/` and `sk
 
 The `skills/quantitative-intelligence/references/calculation-workflow.md` documents how downstream skills should request calculations from the 10 calculator classes (ConcreteVolumeCalc, WallAreaCalc, RoomAreaCalc, PipeRunCalc, FootingCalc, SlabCalc, RoofCalc, PEMBCalc, SymbolCountCalc, AggregateCalc), including source priority levels and confidence scoring.
 
+**Important for local development**: The Python virtual environment lives at `~/foreman-os-venv/` (outside the repo). The MCP server config is at `~/.claude/.mcp.json` (user-level). These are kept outside the repo because the local directory marketplace copier does not respect `.gitignore` — anything in the repo root gets copied to the plugin cache, which breaks the Cowork sandbox.
+
 The `skills/dwg-extraction/scripts/` directory contains executable scripts that ARE run directly:
 - `compile_libredwg.sh` — Compiles the libredwg C library from GitHub source (cached at `/tmp/libredwg/dwg2dxf`)
 - `parse_dxf.py` — Custom DXF entity parser that handles Civil 3D XDATA patterns, INSERT+ATTRIB sequences, and proximity-based structure grouping
