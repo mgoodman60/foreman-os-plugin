@@ -6,177 +6,150 @@ The superintendent's operating system. A complete construction field management 
 
 Foreman_OS extracts comprehensive intelligence from your project documents — plans, specs, schedules, contracts, sub lists, geotech reports, safety plans, and more — then puts that intelligence to work across every part of your daily workflow: daily reports, 3-week look-aheads, RFI/submittal management, weekly owner reports, material tracking, vendor sourcing, and construction schedule generation.
 
-Upload your documents once. Everything gets smarter from there.
+Built for superintendents, not software engineers.
 
-### Core Capabilities
+## A Day with Foreman_OS
 
-- **Deep document intelligence** — Three-pass extraction pipeline (metadata → structure → targeted content) pulls grid lines, room schedules, spec requirements, weather thresholds, hold points, tolerances, schedule milestones, sub directories, safety zones, SWPPP requirements, and geotechnical data
-- **Conversational field intake** — Log observations throughout the day in plain language. The chatbot classifies your input, resolves sub names and locations against project intelligence, and stores everything for report generation
-- **Daily reports** — Professional PDFs with AI-powered language standardization, photo captioning, smart placement, spec enrichment, and automated QA
-- **3-week look-ahead** — Auto-generated lookahead schedules populated with subs, activities, materials, weather forecasts, and blocker alerts
-- **RFI preparation** — Draft RFIs with auto-filled drawing references, spec sections, grid lines, and project team info
-- **Submittal review** — Cross-reference submittals against spec requirements with line-by-line compliance checking and professional review comments
-- **Weekly owner reports** — Aggregate daily reports into polished weekly summaries for the owner/PM
-- **Material & procurement tracking** — Full lifecycle from PO through delivery through spec verification and cert tracking
-- **Vendor sourcing** — Find suppliers, maintain a vendor database, track quotes and capabilities
-- **Construction schedules** — Generate formatted door, hardware, fixture, finish, plumbing, and equipment schedules from extracted plan data
-- **Interactive dashboards** — Weekly and project-lifetime views with charts, milestone tracking, and a built-in data chat
-- **Morning briefings** — Daily context with weather, schedule, carry-forward items, delivery alerts, and pending action items
-- **Project memory** — Auto-generated CLAUDE.md file that keeps Claude current on your project across sessions
+**6:15 AM** — You run `/morning-brief` from the truck. Weather is 38°F with rain clearing by 10 AM. The system flags that 38°F is below the 40°F minimum for concrete placement per Section 03 30 00. Two deliveries today: structural steel at 7:30 and waterproofing membrane at noon. Foundation inspection is scheduled for 2 PM.
+
+**7:00 AM** — Steel arrives. You type `/log Walker delivered W12x26 beams to east wing, 14 pieces, good condition`. The system resolves "Walker" to Walker Construction from the sub directory, maps "east wing" to Grid E-G / Level 1 from plans-spatial, links the steel to spec section 05 12 00, and logs quantity as 14 of 47 total beams (30%).
+
+**11:30 AM** — You walk the foundation forms and type `/log rebar spacing looks tight in the north footing, grid B-2`. The system classifies this as a quality observation, links it to spec section 03 20 00 (ASTM A615 Grade 60), cross-references the grid location, and flags that this area has a hold point inspection before pour.
+
+**3:00 PM** — End of day. You run `/daily-report`. It pulls everything from your morning brief, both log entries, and any photos you dropped in. Narratives get standardized to third person past tense. Photos are auto-captioned and placed. Spec references, grid lines, and weather data are woven in. Out comes a .docx matching your company template.
+
+**Friday** — You run `/weekly-report` to roll up all five daily reports into a polished owner summary. `/look-ahead` generates the 3-week schedule with sub assignments, material deliveries, and weather constraints. `/dashboard` shows crew trends, inspection pass rates, and the S-curve.
+
+That's the daily loop. Everything else plugs into the same intelligence layer.
+
+## Getting Started
+
+1. **Install and set up** — Install the plugin, then run `/set-project` to configure your project and upload key documents (plans, specs, schedule, sub list, etc.)
+2. **Morning brief** — Run `/morning-brief` each morning for weather, schedule, deliveries, and alerts
+3. **Log throughout the day** — Use `/log` as things happen on site. Talk naturally; entity resolution handles the rest
+4. **Generate your report** — Run `/daily-report` at end of day. It pulls from your logs, standardizes language, and places photos
+
+From there, explore: `/look-ahead` for 3-week scheduling, `/prepare-rfi` for RFI drafting, `/safety` for incident logging, `/weekly-report` for the owner, `/dashboard` for analytics, `/process-docs` when new documents arrive.
 
 ## Commands
 
 ### Project Setup
 
-#### `/set-project [name]`
-Initialize a new project. Collects project basics and accepts document uploads for deep intelligence extraction. Generates the project memory file (CLAUDE.md) for session continuity.
-
-#### `/process-docs [filename, type, or "scan"]`
-Process specific documents to extract intelligence. Point it at a file, a document type, or drag a file into the chat. Classifies automatically, extracts intelligence, and merges with existing project data. Use `/process-docs scan` to see what's new or changed in your project folders before processing.
-
-#### `/process-dwg [filename.dwg]`
-Extract intelligence from AutoCAD DWG files (including Civil 3D). Compiles libredwg from source, converts DWG to DXF, and parses all entity types — survey points, utility structures, contours, property boundaries, construction keynotes, grading data — into structured project data in plans-spatial.json.
+| Command | Description |
+|---------|-------------|
+| `/set-project [name]` | Initialize a new project. Collects project basics and accepts document uploads for deep intelligence extraction. Generates the project memory file (CLAUDE.md) for session continuity |
+| `/process-docs [filename, type, or "scan"]` | Process specific documents to extract intelligence. Classifies automatically, extracts intelligence, and merges with existing project data. Use `scan` to check for changes |
+| `/process-dwg [filename.dwg]` | Extract intelligence from AutoCAD DWG files (including Civil 3D). Compiles libredwg, converts DWG to DXF, and parses all entity types into plans-spatial.json |
 
 ### Daily Workflow
 
-#### `/morning-brief`
-Start each day with weather, schedule context, approaching milestones, carry-forward items, delivery alerts, pending RFIs, and overdue submittals.
-
-#### `/log [observation | clear]`
-Log field observations throughout the day. Talk naturally — the chatbot handles classification, entity resolution, and enrichment. Use `/log clear` to archive today's entries and start fresh.
-
-#### `/daily-report [date]`
-Generate a daily report .docx (matching the W Principles template) with optional PDF export. Pulls from the intake log plus any additional input. Runs QA against project intelligence. Pass a past date to backfill.
-
-#### `/amend-report [number or date]`
-Make corrections or additions to a previously generated report.
+| Command | Description |
+|---------|-------------|
+| `/morning-brief` | Start each day with weather, schedule context, approaching milestones, carry-forward items, delivery alerts, pending RFIs, and overdue submittals |
+| `/log [observation \| clear]` | Log field observations throughout the day. Talk naturally — handles classification, entity resolution, and enrichment. Use `clear` to archive and start fresh |
+| `/daily-report [date]` | Generate a daily report .docx with AI-powered language standardization, photo captioning, spec enrichment, and automated QA. Pass a past date to backfill |
+| `/amend-report [number or date]` | Make corrections or additions to a previously generated report |
 
 ### Planning & Scheduling
 
-#### `/look-ahead [weeks]`
-Generate a 3-week (or custom) lookahead schedule. Maps activities to subs, locations, materials, and weather. Flags blockers from pending RFIs, submittals, and materials.
-
-#### `/plan [weekly|status|constraints|commitments|report]`
-Last Planner System — create weekly work plans with trade foreman commitments, perform constraint analysis, track Percent Plan Complete (PPC), categorize variances, and generate weekly planning reports.
-
-#### `/schedules [type]`
-Generate formatted construction schedules from plan data: door, hardware, fixture, finish, plumbing, equipment, room, or all.
+| Command | Description |
+|---------|-------------|
+| `/look-ahead [weeks]` | Generate a 3-week (or custom) lookahead schedule. Maps activities to subs, locations, materials, and weather. Flags blockers from pending RFIs, submittals, and materials |
+| `/plan [weekly\|status\|constraints\|commitments\|report]` | Last Planner System — weekly work plans with trade foreman commitments, constraint analysis, PPC tracking, variance categorization, and weekly planning reports |
+| `/schedules [type]` | Generate formatted construction schedules from plan data: door, hardware, fixture, finish, plumbing, equipment, room, or all |
 
 ### Document Management
 
-#### `/prepare-rfi [topic]`
-Draft an RFI with auto-filled project intelligence — drawing references, spec sections, grid lines, project team. Pass "transmittal" to create a submittal transmittal instead.
-
-#### `/submittal-review [ID]`
-Review a submittal against spec requirements. Generates a compliance matrix and professional review comments. Upload a submittal PDF or reference an existing log entry.
-
-#### `/drawings [status|add|revise|asi|audit|search|distribute]`
-Drawing revision control — track current sets, process ASIs, manage superseded sheets, run field audits, and distribute updated drawings to trades.
+| Command | Description |
+|---------|-------------|
+| `/prepare-rfi [topic]` | Draft an RFI with auto-filled project intelligence — drawing references, spec sections, grid lines, project team. Pass "transmittal" to create a submittal transmittal |
+| `/submittal-review [ID]` | Review a submittal against spec requirements. Generates a compliance matrix and professional review comments |
+| `/drawings [status\|add\|revise\|asi\|audit\|search\|distribute]` | Drawing revision control — track current sets, process ASIs, manage superseded sheets, run field audits, and distribute to trades |
 
 ### Reporting & Analytics
 
-#### `/weekly-report [week-ending date]`
-Aggregate daily reports into a polished weekly owner/PM summary with executive narrative, schedule status, photos, and issue tracking.
-
-#### `/dashboard [weekly|project]`
-Interactive HTML dashboard with Weekly (crew trends, weather, inspections) and Project (lifetime metrics, milestones, S-curve) tabs. Includes a built-in data chat.
+| Command | Description |
+|---------|-------------|
+| `/weekly-report [week-ending date]` | Aggregate daily reports into a polished weekly owner/PM summary with executive narrative, schedule status, photos, and issue tracking |
+| `/dashboard [weekly\|project]` | Interactive HTML dashboard with Weekly (crew trends, weather, inspections) and Project (lifetime metrics, milestones, S-curve) tabs. Includes a built-in data chat |
 
 ### Procurement & Sourcing
 
-#### `/material-tracker [add|status|delivery|verify|find]`
-Track materials through the full procurement lifecycle. Add items, check status, log deliveries, verify against specs, track certifications. Use `/material-tracker find [material]` to search for vendors and suppliers.
-
-### Project Closeout
-
-#### `/closeout [status|add|checklist|commission|warranty|generate]`
-Track project closeout, commissioning, and warranty items. View closeout status, initialize the master checklist, track system commissioning (pre-functional through FPT), manage warranties with expiration alerts, and generate closeout status reports for the owner/PM.
+| Command | Description |
+|---------|-------------|
+| `/material-tracker [add\|status\|delivery\|verify\|find]` | Track materials through the full procurement lifecycle. Add items, check status, log deliveries, verify against specs, track certifications. Use `find` to search for vendors |
 
 ### Safety & Quality
 
-#### `/safety [log|incident|toolbox|jsa|metrics|inspect|report]`
-Comprehensive safety management — log incidents and near-misses, run toolbox talks, create JSAs, calculate TRIR/DART/EMR metrics, run safety inspections, and generate OSHA 300/301/300A logs.
-
-#### `/quality [checklist|itp|deficiency|metrics|report]`
-Quality Management System with three-phase inspection checklists by trade, ITP management, deficiency and corrective action tracking, FPIR metrics, and quality reports.
-
-#### `/inspections [schedule|log|status|permits]`
-Schedule inspections, log results, track permits, and view inspection status. Includes safety incident tracking with root cause analysis (5-Why, Fishbone), OSHA recordkeeping, and corrective action management.
-
-#### `/change-order [add|status|log]`
-Track change orders from initiation through resolution. Includes T&M tag tracking with field sign-off workflow, photo documentation, and automatic CO integration.
+| Command | Description |
+|---------|-------------|
+| `/safety [log\|incident\|toolbox\|jsa\|metrics\|inspect\|report]` | Comprehensive safety management — log incidents and near-misses, run toolbox talks, create JSAs, calculate TRIR/DART/EMR metrics, run inspections, and generate OSHA 300/301/300A logs |
+| `/quality [checklist\|itp\|deficiency\|metrics\|report]` | Quality Management System with three-phase inspection checklists by trade, ITP management, deficiency and corrective action tracking, FPIR metrics, and quality reports |
+| `/inspections [schedule\|log\|status\|permits]` | Schedule inspections, log results, track permits, and view inspection status |
+| `/change-order [add\|status\|log]` | Track change orders from initiation through resolution. Includes T&M tag tracking with field sign-off workflow, photo documentation, and automatic CO integration |
 
 ### Risk, Claims & Compliance
 
-#### `/risk [add|review|report|matrix]`
-Proactive risk management with 5x5 probability/impact matrix, risk register, mitigation tracking, contingency management, and monthly risk review reports.
-
-#### `/environmental [leed|swppp|hazmat|waste|report]`
-Environmental compliance management — LEED construction credits, SWPPP administration, hazardous materials procedures, waste diversion tracking, dust/noise monitoring, and environmental incident response.
-
-#### `/claims [document|notice|package|status]`
-Claims documentation system — contemporaneous record standards, photo/video evidence management, notice letter generation, schedule/cost impact documentation, and claims package assembly.
+| Command | Description |
+|---------|-------------|
+| `/risk [add\|review\|report\|matrix]` | Proactive risk management with 5x5 probability/impact matrix, risk register, mitigation tracking, contingency management, and monthly risk review reports |
+| `/environmental [leed\|swppp\|hazmat\|waste\|report]` | Environmental compliance — LEED credits, SWPPP administration, hazmat procedures, waste diversion, dust/noise monitoring, and incident response |
+| `/claims [document\|notice\|package\|status]` | Claims documentation — contemporaneous records, evidence management, notice letter generation, schedule/cost impact documentation, and claims package assembly |
 
 ### BIM & Coordination
 
-#### `/bim [status|clash|model|scan]`
-BIM coordination for field operations — clash detection review, model-to-field verification, 4D schedule visualization, laser scanning/point cloud management, and digital twin handoff.
-
-#### `/annotate [plan|spec|photo|rfi] [reference]`
-Document annotation and markup — plan redlines, spec highlighting, photo callouts, RFI markup packages, and as-built annotations with discipline color coding.
-
-#### `/conflicts [scan|status|resolve|history]`
-Cross-discipline conflict detection and resolution tracking. Compares plans vs. specs, specs vs. schedule, drawing vs. drawing, cost vs. scope, and dual-source data to catch discrepancies before they become expensive field problems. Tracks conflicts from detection through resolution with full audit trail.
+| Command | Description |
+|---------|-------------|
+| `/bim [status\|clash\|model\|scan]` | BIM coordination — clash detection review, model-to-field verification, 4D schedule visualization, laser scanning/point cloud management, and digital twin handoff |
+| `/annotate [plan\|spec\|photo\|rfi] [reference]` | Document annotation and markup — plan redlines, spec highlighting, photo callouts, RFI markup packages, and as-built annotations with discipline color coding |
+| `/conflicts [scan\|status\|resolve\|history]` | Cross-discipline conflict detection and resolution tracking. Compares plans vs. specs, specs vs. schedule, drawing vs. drawing, cost vs. scope to catch discrepancies before they become field problems |
 
 ### Field Documentation
 
-#### `/meeting-notes [type]`
-Record meeting minutes for OAC, progress, safety, and pre-installation meetings. Tracks action items with automatic carry-forward and generates .docx minutes.
-
-#### `/punch-list [add|status|generate]`
-Manage punch list items from identification through completion. Track deficiencies by area and trade, manage back-charges, and generate professional closeout reports.
-
-#### `/delay [add|status|log]`
-Track construction delays with excusable/compensable classification, critical path analysis, and time impact analysis. Supports weather methodology and contract extension documentation.
-
-#### `/pay-app [add|status|generate]`
-Manage pay applications using AIA G702/G703 format. Track schedule of values, retainage, lien waivers, and overbilling detection.
-
-#### `/labor [log|summary|productivity|validate|payroll|cost]`
-Per-worker and crew labor tracking with productivity metrics, certified payroll generation, and earned value cost integration.
-
-#### `/sub-scorecard [sub name|all|report|compare]`
-Subcontractor performance scorecards across 5 weighted dimensions — schedule adherence, quality, safety, responsiveness, and professionalism.
+| Command | Description |
+|---------|-------------|
+| `/meeting-notes [type]` | Record meeting minutes for OAC, progress, safety, and pre-installation meetings. Tracks action items with automatic carry-forward and generates .docx minutes |
+| `/punch-list [add\|status\|generate]` | Manage punch list items from identification through completion. Track deficiencies by area and trade, manage back-charges, and generate closeout reports |
+| `/delay [add\|status\|log]` | Track construction delays with excusable/compensable classification, critical path analysis, and time impact analysis |
+| `/pay-app [add\|status\|generate]` | Manage pay applications using AIA G702/G703 format. Track schedule of values, retainage, lien waivers, and overbilling detection |
+| `/labor [log\|summary\|productivity\|validate\|payroll\|cost]` | Per-worker and crew labor tracking with productivity metrics, certified payroll generation, and earned value cost integration |
+| `/sub-scorecard [sub name\|all\|report\|compare]` | Subcontractor performance scorecards across 5 weighted dimensions — schedule adherence, quality, safety, responsiveness, and professionalism |
 
 ### Cost & Financial
 
-#### `/cost [status|forecast|variance|invoice|report]`
-Project cost management with budget structure, CPI/EAC/variance analysis, cash flow projections, and cost-loaded schedule integration.
+| Command | Description |
+|---------|-------------|
+| `/cost [status\|forecast\|variance\|invoice\|report]` | Project cost management with budget structure, CPI/EAC/variance analysis, cash flow projections, and cost-loaded schedule integration |
+| `/evm [status\|calculate\|curve\|forecast\|report]` | Earned Value Management with S-curve visualization, SPI/CPI calculation, EAC/ETC forecasting, and project performance trending |
 
-#### `/evm [status|calculate|curve|forecast|report]`
-Earned Value Management with S-curve visualization, SPI/CPI calculation, EAC/ETC forecasting, and project performance trending.
+### Project Closeout
+
+| Command | Description |
+|---------|-------------|
+| `/closeout [status\|add\|checklist\|commission\|warranty\|generate]` | Track project closeout, commissioning, and warranty items. View closeout status, initialize the master checklist, track system commissioning, manage warranties with expiration alerts, and generate closeout reports |
 
 ### Visualization & Intelligence
 
-#### `/data [section]`
-Project Data Intelligence dashboard. Browse and query all extracted project intelligence across 40+ sections covering spatial data, specifications, financials, and project controls.
+| Command | Description |
+|---------|-------------|
+| `/data [section]` | Project Data Intelligence dashboard. Browse and query all extracted project intelligence across 40+ sections |
+| `/render [type]` | Generate AI architectural renderings from project intelligence and visual context |
+| `/site-context [gather\|review]` | Gather visual context for AI rendering generation — site photos, design intent, material selections, and environmental context |
 
-#### `/render [type]`
-Generate AI architectural renderings from project intelligence and visual context. Produces photorealistic progress renders, exterior/interior visualizations, and site context images.
+## Supported Document Types
 
-#### `/site-context [gather|review]`
-Gather visual context for AI rendering generation. Collects site photos, design intent, material selections, and environmental context to produce accurate renderings.
-
-## Getting Started
-
-1. Install the plugin
-2. Run `/set-project` to configure your project and upload key documents
-3. Run `/morning-brief` each morning for your daily context
-4. Use `/log` throughout the day as things happen on site
-5. Run `/daily-report` to generate your report (it'll show a log summary first so you can fill gaps)
-6. Run `/look-ahead` to plan the next 3 weeks
-7. Run `/process-docs` any time new project docs come in (use `/process-docs scan` to check for changes)
-8. Run `/dashboard` to see how the project is trending
-9. Run `/weekly-report` at the end of each week for the owner
+| Document | What Gets Extracted |
+|----------|-------------------|
+| Plans / Drawings | Grid lines, building areas, floor levels, room schedules, site layout, compass, door/hardware/finish/fixture schedules |
+| Specifications | CSI divisions, material specs, weather thresholds, hold points, tolerances, testing requirements, submittal requirements |
+| CPM Schedule | Milestones, critical path, near-critical, weather-sensitive activities, long-lead items, predecessors/successors |
+| Contract | Key dates, LDs, working hours, documentation requirements, special requirements |
+| Sub List / Bid Tab | Subcontractor directory with trades, scopes, contacts |
+| Geotechnical Report | Bearing capacity, water table, compaction requirements, unsuitable soils, dewatering |
+| Safety Plan | Fall protection zones, confined spaces, hot work areas, crane exclusion zones |
+| SWPPP | BMP inventory, inspection triggers, documentation requirements |
+| RFI / Submittal Logs | RFI and submittal entries with status, references, responses, lead times |
+| Vendor Quotes / Product Data | Supplier capabilities, contact info, pricing, certifications, manufacturer data |
 
 ## How Project Intelligence Works
 
@@ -275,22 +248,19 @@ The plugin includes forty-two specialized skills:
 
 The plugin includes eleven autonomous agents that monitor, analyze, and advise across the project intelligence data store. Agents are auto-discovered from the `agents/` directory.
 
-### Orchestration
-- **superintendent-assistant** — Top-level assistant that routes requests to the appropriate specialized agent, coordinates multi-agent workflows, and handles general project questions
-
-### Data & Monitoring
-- **data-integrity-watchdog** — Validates consistency across all 28 project intelligence JSON files — detects orphans, cross-file conflicts, schema gaps, staleness, and broken reference chains
-- **project-health-monitor** — Evaluates 8 project KPIs and 5 anomaly detection rules to generate health alerts and trend analysis
-- **dashboard-intelligence-analyst** — Generates project dashboard summaries, executive briefings, and narrative health reports by querying across all 28 JSON files
-- **project-data-navigator** — Translates natural language questions from superintendents into structured data queries across the 28-file project intelligence store
-- **deadline-sentinel** — Monitors all project deadlines across schedule milestones, submittal due dates, RFI response windows, procurement lead times, inspection prerequisites, and contract notice periods
-
-### Field & Workflow
-- **report-quality-auditor** — Automatically reviews daily and weekly reports for completeness, consistency, and accuracy against the full project data store
-- **field-intelligence-advisor** — Provides contextual field intelligence by pulling together relevant data from across the project store to support real-time superintendent decisions
-- **weekly-planning-coordinator** — Orchestrates the weekly lookahead planning cycle using Last Planner System principles — constraint analysis, PPC tracking, and weekly work plan generation
-- **doc-orchestrator** — Coordinates multi-document extraction runs, validates extraction output, and ensures data quality after processing
-- **conflict-detection-agent** — Scans for cross-discipline discrepancies across plans, specs, schedules, and field data using 25 detection rules across 8 conflict categories
+| Agent | Role |
+|-------|------|
+| **superintendent-assistant** | Top-level assistant that routes requests to the appropriate specialized agent, coordinates multi-agent workflows, and handles general project questions |
+| **data-integrity-watchdog** | Validates consistency across all 28 project intelligence JSON files — detects orphans, cross-file conflicts, schema gaps, staleness, and broken reference chains |
+| **project-health-monitor** | Evaluates 11 KPIs and 5 anomaly detection rules to generate health alerts and trend analysis |
+| **dashboard-intelligence-analyst** | Generates project dashboard summaries, executive briefings, and narrative health reports by querying across all 28 JSON files |
+| **project-data-navigator** | Translates natural language questions from superintendents into structured data queries across the 28-file project intelligence store |
+| **deadline-sentinel** | Monitors all project deadlines across schedule milestones, submittal due dates, RFI response windows, procurement lead times, inspection prerequisites, and contract notice periods |
+| **report-quality-auditor** | Automatically reviews daily and weekly reports for completeness, consistency, and accuracy against the full project data store |
+| **field-intelligence-advisor** | Provides contextual field intelligence by pulling together relevant data from across the project store to support real-time superintendent decisions |
+| **weekly-planning-coordinator** | Orchestrates the weekly lookahead planning cycle using Last Planner System principles — constraint analysis, PPC tracking, and weekly work plan generation |
+| **doc-orchestrator** | Coordinates multi-document extraction runs, validates extraction output, and ensures data quality after processing |
+| **conflict-detection-agent** | Scans for cross-discipline discrepancies across plans, specs, schedules, and field data using 25 detection rules across 8 conflict categories |
 
 ## Files
 
@@ -338,20 +308,3 @@ The plugin creates these files in your working directory:
 - `daily-report-data.json` — Structured report history (the "project memory")
 - `daily-report-intake.json` — Running intake log for the current day
 - `CLAUDE.md` — Project working memory for session continuity
-
-## Document Types Supported
-
-| Document | What Gets Extracted |
-|----------|-------------------|
-| Plans / Drawings | Grid lines, building areas, floor levels, room schedules, site layout, compass, door/hardware/finish/fixture schedules |
-| Specifications | CSI divisions, material specs, weather thresholds, hold points, tolerances, testing requirements, submittal requirements |
-| CPM Schedule | Milestones, critical path, near-critical, weather-sensitive activities, long-lead items, predecessors/successors |
-| Contract | Key dates, LDs, working hours, documentation requirements, special requirements |
-| Sub List / Bid Tab | Subcontractor directory with trades, scopes, contacts |
-| Geotechnical Report | Bearing capacity, water table, compaction requirements, unsuitable soils, dewatering |
-| Safety Plan | Fall protection zones, confined spaces, hot work areas, crane exclusion zones |
-| SWPPP | BMP inventory, inspection triggers, documentation requirements |
-| RFI Log | RFI entries with status, references, responses, schedule impact |
-| Submittal Log | Submittal entries with review status, compliance, lead times |
-| Vendor Quotes / Catalogs | Supplier capabilities, contact info, pricing, certifications |
-| Product Data Sheets | Product specs, manufacturer data, certifications for submittal review |
