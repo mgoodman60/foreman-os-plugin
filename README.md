@@ -1,310 +1,314 @@
-# Foreman_OS
+# ForemanOS v5.0
 
-The superintendent's operating system. A complete construction field management toolkit powered by deep document intelligence.
-
-## What it does
-
-Foreman_OS extracts comprehensive intelligence from your project documents — plans, specs, schedules, contracts, sub lists, geotech reports, safety plans, and more — then puts that intelligence to work across every part of your daily workflow: daily reports, 3-week look-aheads, RFI/submittal management, weekly owner reports, material tracking, vendor sourcing, and construction schedule generation.
+The superintendent's operating system. 7 modular plugins for construction field management, powered by deep document intelligence.
 
 Built for superintendents, not software engineers.
 
-## A Day with Foreman_OS
+## Plugin Architecture
 
-**6:15 AM** — You run `/morning-brief` from the truck. Weather is 38°F with rain clearing by 10 AM. The system flags that 38°F is below the 40°F minimum for concrete placement per Section 03 30 00. Two deliveries today: structural steel at 7:30 and waterproofing membrane at noon. Foundation inspection is scheduled for 2 PM.
+ForemanOS v5.0 splits the former monolith into 7 self-contained Cowork plugins. Each plugin has its own commands, skills, and agents. Install only what you need.
 
-**7:00 AM** — Steel arrives. You type `/log Walker delivered W12x26 beams to east wing, 14 pieces, good condition`. The system resolves "Walker" to Walker Construction from the sub directory, maps "east wing" to Grid E-G / Level 1 from plans-spatial, links the steel to spec section 05 12 00, and logs quantity as 14 of 47 total beams (30%).
+| Plugin | Cmds | Skills | Agents | Description |
+|--------|------|--------|--------|-------------|
+| **foremanos-core** | 7 | 6 | 4 | Project setup, data, dashboards, briefings, rendering. Install first. |
+| **foremanos-intel** | 2 | 4+1 stub | 3 | Document intelligence, DWG extraction, quantitative takeoffs. |
+| **foremanos-field** | 8 | 10+1 stub | 2 | Daily reporting, safety, quality, inspections, labor, punch lists. |
+| **foremanos-planning** | 6 | 5+4 stubs | 2 | Scheduling, look-aheads, weekly reports, material tracking. |
+| **foremanos-doccontrol** | 5 | 5+2 stubs | 0 | RFI prep, submittals, drawings, annotations, BIM. |
+| **foremanos-cost** | 6 | 7+2 stubs | 0 | Cost tracking, EVM, pay apps, change orders, delays, claims. |
+| **foremanos-compliance** | 5 | 5+3 stubs | 0 | Risk, environmental, closeout, sub scorecards, conflicts. |
 
-**11:30 AM** — You walk the foundation forms and type `/log rebar spacing looks tight in the north footing, grid B-2`. The system classifies this as a quality observation, links it to spec section 03 20 00 (ASTM A615 Grade 60), cross-references the grid location, and flags that this area has a hold point inspection before pour.
+**Totals:** 39 commands, 42 full skills + 13 stubs, 11 agents across 7 plugins.
 
-**3:00 PM** — End of day. You run `/daily-report`. It pulls everything from your morning brief, both log entries, and any photos you dropped in. Narratives get standardized to third person past tense. Photos are auto-captioned and placed. Spec references, grid lines, and weather data are woven in. Out comes a .docx matching your company template.
+## Installation
 
-**Friday** — You run `/weekly-report` to roll up all five daily reports into a polished owner summary. `/look-ahead` generates the 3-week schedule with sub assignments, material deliveries, and weather constraints. `/dashboard` shows crew trends, inspection pass rates, and the S-curve.
+All plugins live in the **foreman-os-marketplace**. Install via Cowork:
 
-That's the daily loop. Everything else plugs into the same intelligence layer.
+```
+claude plugin install foremanos-core@foreman-os-marketplace
+```
 
-## Getting Started
+**foremanos-core is required** -- every other plugin depends on it for project data, entity resolution, and the data store backbone.
 
-1. **Install and set up** — Install the plugin, then run `/set-project` to configure your project and upload key documents (plans, specs, schedule, sub list, etc.)
-2. **Morning brief** — Run `/morning-brief` each morning for weather, schedule, deliveries, and alerts
-3. **Log throughout the day** — Use `/log` as things happen on site. Talk naturally; entity resolution handles the rest
-4. **Generate your report** — Run `/daily-report` at end of day. It pulls from your logs, standardizes language, and places photos
+### Recommended Install Sets
 
-From there, explore: `/look-ahead` for 3-week scheduling, `/prepare-rfi` for RFI drafting, `/safety` for incident logging, `/weekly-report` for the owner, `/dashboard` for analytics, `/process-docs` when new documents arrive.
+| Use Case | Plugins | Commands |
+|----------|---------|----------|
+| **Core only** | `foremanos-core` | `/set-project`, `/data`, `/dashboard`, `/morning-brief`, `/render`, `/site-context`, `/foremanos` |
+| **Core + Field** | + `foremanos-field` | Add `/log`, `/daily-report`, `/amend-report`, `/safety`, `/quality`, `/inspections`, `/labor`, `/punch-list` |
+| **Core + Field + Planning** | + `foremanos-planning` | Add `/look-ahead`, `/plan`, `/weekly-report`, `/schedules`, `/material-tracker`, `/meeting-notes` |
+| **All 7** | All plugins | Full 39-command suite |
 
-## Commands
+Install plugins one at a time, in any order after core:
 
-### Project Setup
+```
+claude plugin install foremanos-core@foreman-os-marketplace
+claude plugin install foremanos-field@foreman-os-marketplace
+claude plugin install foremanos-planning@foreman-os-marketplace
+claude plugin install foremanos-intel@foreman-os-marketplace
+claude plugin install foremanos-doccontrol@foreman-os-marketplace
+claude plugin install foremanos-cost@foreman-os-marketplace
+claude plugin install foremanos-compliance@foreman-os-marketplace
+```
 
-| Command | Description |
-|---------|-------------|
-| `/set-project [name]` | Initialize a new project. Collects project basics and accepts document uploads for deep intelligence extraction. Generates the project memory file (CLAUDE.md) for session continuity |
-| `/process-docs [filename, type, or "scan"]` | Process specific documents to extract intelligence. Classifies automatically, extracts intelligence, and merges with existing project data. Use `scan` to check for changes |
-| `/process-dwg [filename.dwg]` | Extract intelligence from AutoCAD DWG files (including Civil 3D). Compiles libredwg, converts DWG to DXF, and parses all entity types into plans-spatial.json |
+## A Day with ForemanOS
 
-### Daily Workflow
+**6:15 AM** -- Run `/morning-brief` from the truck. Weather is 38F with rain clearing by 10 AM. The system flags 38F is below the 40F minimum for concrete placement per Section 03 30 00. Two deliveries today: structural steel at 7:30, waterproofing membrane at noon. Foundation inspection at 2 PM.
 
-| Command | Description |
-|---------|-------------|
-| `/morning-brief` | Start each day with weather, schedule context, approaching milestones, carry-forward items, delivery alerts, pending RFIs, and overdue submittals |
-| `/log [observation \| clear]` | Log field observations throughout the day. Talk naturally — handles classification, entity resolution, and enrichment. Use `clear` to archive and start fresh |
-| `/daily-report [date]` | Generate a daily report .docx with AI-powered language standardization, photo captioning, spec enrichment, and automated QA. Pass a past date to backfill |
-| `/amend-report [number or date]` | Make corrections or additions to a previously generated report |
+**7:00 AM** -- Steel arrives. Type `/log Walker delivered W12x26 beams to east wing, 14 pieces, good condition`. The system resolves "Walker" to Walker Construction from the sub directory, maps "east wing" to Grid E-G / Level 1, links steel to spec section 05 12 00, and logs quantity as 14 of 47 total beams (30%).
 
-### Planning & Scheduling
+**11:30 AM** -- Walk the foundation forms. Type `/log rebar spacing looks tight in the north footing, grid B-2`. Classified as a quality observation, linked to Section 03 20 00 (ASTM A615 Grade 60), with a hold point inspection flagged before pour.
 
-| Command | Description |
-|---------|-------------|
-| `/look-ahead [weeks]` | Generate a 3-week (or custom) lookahead schedule. Maps activities to subs, locations, materials, and weather. Flags blockers from pending RFIs, submittals, and materials |
-| `/plan [weekly\|status\|constraints\|commitments\|report]` | Last Planner System — weekly work plans with trade foreman commitments, constraint analysis, PPC tracking, variance categorization, and weekly planning reports |
-| `/schedules [type]` | Generate formatted construction schedules from plan data: door, hardware, fixture, finish, plumbing, equipment, room, or all |
+**3:00 PM** -- Run `/daily-report`. It pulls everything from the morning brief, both log entries, and any photos. Narratives standardized to third person past tense. Photos auto-captioned. Spec references, grid lines, and weather data woven in. Out comes a .docx matching your company template.
 
-### Document Management
+**Friday** -- `/weekly-report` rolls up all five daily reports into a polished owner summary. `/look-ahead` generates the 3-week schedule. `/dashboard` shows crew trends, inspection pass rates, and the S-curve.
 
-| Command | Description |
-|---------|-------------|
-| `/prepare-rfi [topic]` | Draft an RFI with auto-filled project intelligence — drawing references, spec sections, grid lines, project team. Pass "transmittal" to create a submittal transmittal |
-| `/submittal-review [ID]` | Review a submittal against spec requirements. Generates a compliance matrix and professional review comments |
-| `/drawings [status\|add\|revise\|asi\|audit\|search\|distribute]` | Drawing revision control — track current sets, process ASIs, manage superseded sheets, run field audits, and distribute to trades |
+## Command Map
 
-### Reporting & Analytics
+Every command and which plugin provides it.
 
-| Command | Description |
-|---------|-------------|
-| `/weekly-report [week-ending date]` | Aggregate daily reports into a polished weekly owner/PM summary with executive narrative, schedule status, photos, and issue tracking |
-| `/dashboard [weekly\|project]` | Interactive HTML dashboard with Weekly (crew trends, weather, inspections) and Project (lifetime metrics, milestones, S-curve) tabs. Includes a built-in data chat |
-
-### Procurement & Sourcing
+### foremanos-core (7 commands)
 
 | Command | Description |
 |---------|-------------|
-| `/material-tracker [add\|status\|delivery\|verify\|find]` | Track materials through the full procurement lifecycle. Add items, check status, log deliveries, verify against specs, track certifications. Use `find` to search for vendors |
-
-### Safety & Quality
-
-| Command | Description |
-|---------|-------------|
-| `/safety [log\|incident\|toolbox\|jsa\|metrics\|inspect\|report]` | Comprehensive safety management — log incidents and near-misses, run toolbox talks, create JSAs, calculate TRIR/DART/EMR metrics, run inspections, and generate OSHA 300/301/300A logs |
-| `/quality [checklist\|itp\|deficiency\|metrics\|report]` | Quality Management System with three-phase inspection checklists by trade, ITP management, deficiency and corrective action tracking, FPIR metrics, and quality reports |
-| `/inspections [schedule\|log\|status\|permits]` | Schedule inspections, log results, track permits, and view inspection status |
-| `/change-order [add\|status\|log]` | Track change orders from initiation through resolution. Includes T&M tag tracking with field sign-off workflow, photo documentation, and automatic CO integration |
-
-### Risk, Claims & Compliance
-
-| Command | Description |
-|---------|-------------|
-| `/risk [add\|review\|report\|matrix]` | Proactive risk management with 5x5 probability/impact matrix, risk register, mitigation tracking, contingency management, and monthly risk review reports |
-| `/environmental [leed\|swppp\|hazmat\|waste\|report]` | Environmental compliance — LEED credits, SWPPP administration, hazmat procedures, waste diversion, dust/noise monitoring, and incident response |
-| `/claims [document\|notice\|package\|status]` | Claims documentation — contemporaneous records, evidence management, notice letter generation, schedule/cost impact documentation, and claims package assembly |
-
-### BIM & Coordination
-
-| Command | Description |
-|---------|-------------|
-| `/bim [status\|clash\|model\|scan]` | BIM coordination — clash detection review, model-to-field verification, 4D schedule visualization, laser scanning/point cloud management, and digital twin handoff |
-| `/annotate [plan\|spec\|photo\|rfi] [reference]` | Document annotation and markup — plan redlines, spec highlighting, photo callouts, RFI markup packages, and as-built annotations with discipline color coding |
-| `/conflicts [scan\|status\|resolve\|history]` | Cross-discipline conflict detection and resolution tracking. Compares plans vs. specs, specs vs. schedule, drawing vs. drawing, cost vs. scope to catch discrepancies before they become field problems |
-
-### Field Documentation
-
-| Command | Description |
-|---------|-------------|
-| `/meeting-notes [type]` | Record meeting minutes for OAC, progress, safety, and pre-installation meetings. Tracks action items with automatic carry-forward and generates .docx minutes |
-| `/punch-list [add\|status\|generate]` | Manage punch list items from identification through completion. Track deficiencies by area and trade, manage back-charges, and generate closeout reports |
-| `/delay [add\|status\|log]` | Track construction delays with excusable/compensable classification, critical path analysis, and time impact analysis |
-| `/pay-app [add\|status\|generate]` | Manage pay applications using AIA G702/G703 format. Track schedule of values, retainage, lien waivers, and overbilling detection |
-| `/labor [log\|summary\|productivity\|validate\|payroll\|cost]` | Per-worker and crew labor tracking with productivity metrics, certified payroll generation, and earned value cost integration |
-| `/sub-scorecard [sub name\|all\|report\|compare]` | Subcontractor performance scorecards across 5 weighted dimensions — schedule adherence, quality, safety, responsiveness, and professionalism |
-
-### Cost & Financial
-
-| Command | Description |
-|---------|-------------|
-| `/cost [status\|forecast\|variance\|invoice\|report]` | Project cost management with budget structure, CPI/EAC/variance analysis, cash flow projections, and cost-loaded schedule integration |
-| `/evm [status\|calculate\|curve\|forecast\|report]` | Earned Value Management with S-curve visualization, SPI/CPI calculation, EAC/ETC forecasting, and project performance trending |
-
-### Project Closeout
-
-| Command | Description |
-|---------|-------------|
-| `/closeout [status\|add\|checklist\|commission\|warranty\|generate]` | Track project closeout, commissioning, and warranty items. View closeout status, initialize the master checklist, track system commissioning, manage warranties with expiration alerts, and generate closeout reports |
-
-### Visualization & Intelligence
-
-| Command | Description |
-|---------|-------------|
-| `/data [section]` | Project Data Intelligence dashboard. Browse and query all extracted project intelligence across 40+ sections |
+| `/set-project [name]` | Initialize a new project. Collects basics, accepts document uploads, generates project memory (CLAUDE.md) |
+| `/data [section]` | Project Data Intelligence dashboard. Browse and query all extracted intelligence across 40+ sections |
+| `/dashboard [weekly\|project]` | Interactive HTML dashboard with Weekly/Project tabs and built-in data chat |
+| `/morning-brief` | Daily briefing: weather, schedule, deliveries, alerts, pending RFIs, overdue submittals |
 | `/render [type]` | Generate AI architectural renderings from project intelligence and visual context |
-| `/site-context [gather\|review]` | Gather visual context for AI rendering generation — site photos, design intent, material selections, and environmental context |
+| `/site-context [gather\|review]` | Gather visual context for AI rendering -- site photos, design intent, material selections |
+| `/foremanos` | Plugin help and command reference |
+
+### foremanos-intel (2 commands)
+
+| Command | Description |
+|---------|-------------|
+| `/process-docs [filename, type, or "scan"]` | Process documents for intelligence extraction. Auto-classifies, extracts, and merges with project data |
+| `/process-dwg [filename.dwg]` | Extract intelligence from AutoCAD DWG files (including Civil 3D) via libredwg/DXF pipeline |
+
+### foremanos-field (8 commands)
+
+| Command | Description |
+|---------|-------------|
+| `/log [observation \| clear]` | Log field observations. Natural language with classification, entity resolution, and enrichment |
+| `/daily-report [date]` | Generate daily report .docx with language standardization, photo captioning, and spec enrichment |
+| `/amend-report [number or date]` | Corrections or additions to a previously generated report |
+| `/safety [log\|incident\|toolbox\|jsa\|metrics\|inspect\|report]` | Safety management: incidents, toolbox talks, JSAs, OSHA 300/301/300A, TRIR/DART/EMR metrics |
+| `/quality [checklist\|itp\|deficiency\|metrics\|report]` | QMS: three-phase inspection checklists, ITP management, deficiency tracking, FPIR metrics |
+| `/inspections [schedule\|log\|status\|permits]` | Schedule inspections, log results, track permits, view status |
+| `/labor [log\|summary\|productivity\|validate\|payroll\|cost]` | Per-worker and crew labor tracking, productivity metrics, certified payroll, EV cost integration |
+| `/punch-list [add\|status\|generate]` | Punch list items from identification through completion with back-charge management |
+
+### foremanos-planning (6 commands)
+
+| Command | Description |
+|---------|-------------|
+| `/look-ahead [weeks]` | 3-week lookahead schedule with sub assignments, materials, weather constraints, and blockers |
+| `/plan [weekly\|status\|constraints\|commitments\|report]` | Last Planner System: weekly work plans, PPC tracking, constraint analysis, variance |
+| `/weekly-report [week-ending date]` | Aggregate daily reports into a polished weekly owner/PM summary |
+| `/schedules [type]` | Generate formatted construction schedules: door, hardware, fixture, finish, plumbing, equipment, room |
+| `/material-tracker [add\|status\|delivery\|verify\|find]` | Full-lifecycle material management with delivery verification and vendor search |
+| `/meeting-notes [type]` | Meeting minutes for OAC, progress, safety, and pre-installation meetings. Action item carry-forward |
+
+### foremanos-doccontrol (5 commands)
+
+| Command | Description |
+|---------|-------------|
+| `/prepare-rfi [topic]` | Draft RFIs with auto-filled drawing references, spec sections, grid lines. Also handles transmittals |
+| `/submittal-review [ID]` | Review submittals against spec requirements. Compliance matrix and professional review comments |
+| `/drawings [status\|add\|revise\|asi\|audit\|search\|distribute]` | Drawing revision control: ASIs, superseded sheets, field audits, distribution |
+| `/annotate [plan\|spec\|photo\|rfi] [reference]` | Document markup: plan redlines, spec highlighting, photo callouts, as-built annotations |
+| `/bim [status\|clash\|model\|scan]` | BIM coordination: clash detection, model-to-field verification, 4D scheduling, digital twin |
+
+### foremanos-cost (6 commands)
+
+| Command | Description |
+|---------|-------------|
+| `/cost [status\|forecast\|variance\|invoice\|report]` | Budget structure, CPI/EAC/variance analysis, cash flow projections |
+| `/evm [status\|calculate\|curve\|forecast\|report]` | Earned Value Management with S-curve, SPI/CPI, EAC/ETC forecasting |
+| `/pay-app [add\|status\|generate]` | AIA G702/G703 pay applications: schedule of values, retainage, lien waivers |
+| `/change-order [add\|status\|log]` | Change order tracking with T&M tags, field sign-off workflow, CO integration |
+| `/delay [add\|status\|log]` | Delay tracking: excusable/compensable classification, critical path analysis, TIA |
+| `/claims [document\|notice\|package\|status]` | Claims documentation: contemporaneous records, notice letters, claims package assembly |
+
+### foremanos-compliance (5 commands)
+
+| Command | Description |
+|---------|-------------|
+| `/risk [add\|review\|report\|matrix]` | 5x5 probability/impact matrix, risk register, mitigation tracking, contingency management |
+| `/environmental [leed\|swppp\|hazmat\|waste\|report]` | LEED credits, SWPPP, hazmat, waste diversion, dust/noise monitoring, incident response |
+| `/closeout [status\|add\|checklist\|commission\|warranty\|generate]` | Closeout tracking, ASHRAE Guideline 0 commissioning, warranty management |
+| `/sub-scorecard [sub name\|all\|report\|compare]` | Sub performance scorecards: schedule, quality, safety, responsiveness, professionalism |
+| `/conflicts [scan\|status\|resolve\|history]` | Cross-discipline conflict detection across plans, specs, schedules, and field data |
+
+## Agent Roster
+
+11 autonomous agents across 3 plugins. Agents monitor, analyze, and advise across the project intelligence store. They are read-only -- they never modify data without user approval.
+
+| Agent | Plugin | Role |
+|-------|--------|------|
+| **superintendent-assistant** | core | Top-level router to specialized agents. Handles general project questions |
+| **project-data-navigator** | core | Translates natural language questions to structured data queries across the 28-file store |
+| **dashboard-intelligence-analyst** | core | Generates dashboard summaries, executive briefings, and narrative health reports |
+| **project-health-monitor** | core | Evaluates 11 KPIs and 5 anomaly detection rules for health alerts and trends |
+| **doc-orchestrator** | intel | Coordinates multi-document extraction runs and validates output |
+| **data-integrity-watchdog** | intel | Validates consistency across all 28 JSON files -- orphans, conflicts, schema gaps |
+| **deadline-sentinel** | intel | Monitors all deadline sources with 6-tier urgency across schedule, submittals, RFIs, procurement |
+| **report-quality-auditor** | field | 10 daily + 6 weekly QA checks on generated reports |
+| **field-intelligence-advisor** | field | Contextual field intelligence for real-time superintendent decisions |
+| **weekly-planning-coordinator** | planning | Orchestrates the weekly lookahead cycle using Last Planner System principles |
+| **conflict-detection-agent** | planning | 25 detection rules across 8 conflict categories for cross-discipline discrepancies |
+
+## Skills Architecture
+
+### Full Skills vs. Stubs
+
+Each plugin carries its own **full skills** (SKILL.md plus references/ and scripts/ directories). When a command in one plugin needs methodology from a skill owned by a different plugin, it uses a **stub** -- a SKILL.md-only copy of the canonical source, without the references/ directory.
+
+Stubs are kept in sync by running `sync-stubs.sh` from the repo root after editing any canonical SKILL.md. The script prepends a header comment identifying the canonical source.
+
+**Current stub map:**
+
+| Stub Skill | Canonical Owner | Consumed By |
+|------------|-----------------|-------------|
+| project-data | foremanos-core | intel, field, planning, doccontrol, cost, compliance |
+| report-qa | foremanos-field | planning |
+| document-intelligence | foremanos-intel | doccontrol, compliance |
+| estimating-intelligence | foremanos-intel | cost |
+| quantitative-intelligence | foremanos-intel | planning |
+| submittal-intelligence | foremanos-doccontrol | planning |
+| delay-tracker | foremanos-cost | compliance |
+
+### Cross-Plugin Reference Strategy
+
+Plugins reference each other using three mechanisms, in order of preference:
+
+1. **Stubs** -- SKILL.md methodology synced via `sync-stubs.sh`. The command reads the stub like any local skill. Used for foundational skills needed by many plugins (e.g., project-data).
+2. **Soft references** -- A command mentions a skill by name and describes what it provides, without requiring the file to be present. The AI resolves these if the other plugin is installed; gracefully degrades if not.
+3. **Inlined methodology** -- For agent-level knowledge, the relevant methodology is written directly into the agent definition. Agents are never copied between plugins.
+
+Zero agent copies across the entire system. Zero hard cross-plugin file path references.
+
+## Data Flow
+
+The intelligence pipeline is unchanged from v4.x:
+
+```
+Documents (plans, specs, schedule, contracts, sub list, geotech, safety plan...)
+    |
+    v
+/process-docs or /process-dwg  [foremanos-intel]
+    |
+    v
+Three-pass extraction pipeline (metadata -> structural analysis -> targeted content)
+    |
+    v
+28-file JSON intelligence store (in project's AI - Project Brain/ directory)
+    |
+    v
+All downstream commands and agents consume the store
+```
+
+### Intelligence Store (28 JSON files)
+
+**Project Core:**
+`project-config.json`, `plans-spatial.json`, `specs-quality.json`, `schedule.json`, `directory.json`
+
+**Document & Issue Tracking:**
+`rfi-log.json`, `submittal-log.json`, `procurement-log.json`, `change-order-log.json`, `inspection-log.json`, `meeting-log.json`, `punch-list.json`, `delay-log.json`, `drawing-log.json`
+
+**Financial & Labor:**
+`cost-data.json`, `pay-app-log.json`, `labor-tracking.json`
+
+**Quality:**
+`quality-data.json`
+
+**Safety, Risk & Closeout:**
+`safety-log.json`, `risk-register.json`, `claims-log.json`, `environmental-log.json`, `closeout-data.json`, `annotation-log.json`
+
+**Visualization:**
+`visual-context.json`, `rendering-log.json`
+
+**Report History:**
+`daily-report-data.json`, `daily-report-intake.json`
+
+Every command that reads project data uses entity resolution (sub names, grid locations, spec sections, schedule activities) to enrich raw input with intelligence from the store.
 
 ## Supported Document Types
 
 | Document | What Gets Extracted |
 |----------|-------------------|
-| Plans / Drawings | Grid lines, building areas, floor levels, room schedules, site layout, compass, door/hardware/finish/fixture schedules |
-| Specifications | CSI divisions, material specs, weather thresholds, hold points, tolerances, testing requirements, submittal requirements |
-| CPM Schedule | Milestones, critical path, near-critical, weather-sensitive activities, long-lead items, predecessors/successors |
-| Contract | Key dates, LDs, working hours, documentation requirements, special requirements |
+| Plans / Drawings | Grid lines, building areas, floor levels, room schedules, site layout, door/hardware/finish/fixture schedules |
+| Specifications | CSI divisions, material specs, weather thresholds, hold points, tolerances, testing requirements |
+| CPM Schedule | Milestones, critical path, near-critical, weather-sensitive activities, long-lead items |
+| Contract | Key dates, LDs, working hours, documentation requirements |
 | Sub List / Bid Tab | Subcontractor directory with trades, scopes, contacts |
-| Geotechnical Report | Bearing capacity, water table, compaction requirements, unsuitable soils, dewatering |
+| Geotechnical Report | Bearing capacity, water table, compaction requirements, unsuitable soils |
 | Safety Plan | Fall protection zones, confined spaces, hot work areas, crane exclusion zones |
 | SWPPP | BMP inventory, inspection triggers, documentation requirements |
-| RFI / Submittal Logs | RFI and submittal entries with status, references, responses, lead times |
-| Vendor Quotes / Product Data | Supplier capabilities, contact info, pricing, certifications, manufacturer data |
+| RFI / Submittal Logs | Entries with status, references, responses, lead times |
+| Vendor Quotes / Product Data | Supplier capabilities, contact info, pricing, certifications |
+| AutoCAD DWG / Civil 3D | Survey points, utility structures, contours, property boundaries, grading data (via libredwg) |
 
-## How Project Intelligence Works
+## Migration from v4.2
 
-When you upload project documents during `/set-project` or `/process-docs`, the plugin runs a three-pass extraction pipeline:
+The v4.2 monolith (single `foreman-os` plugin with top-level `commands/`, `skills/`, `agents/` directories) has been replaced by 7 self-contained plugins. Key changes:
 
-1. **Metadata extraction** — Reads PDF properties (creator app, title, dates) to auto-classify the document type
-2. **Structural analysis** — Scans for sheet indices, tables of contents, and table headers to confirm type and guide extraction
-3. **Targeted content extraction** — Pulls specific intelligence based on document type, exhaustively — every schedule, every note, every detail
+- **Monolith removed.** The old single-plugin structure (`commands/`, `skills/`, `agents/` at repo root) no longer exists. All content is now inside the 7 `foremanos-*` plugin directories.
+- **marketplace.json updated.** Lists 7 plugins instead of 1. Each plugin has its own `commands/`, `skills/`, and `agents/` directories.
+- **No command changes.** All 39 commands work exactly as before. Same names, same arguments, same behavior. The only difference is which plugin provides them.
+- **Stubs replace cross-references.** Where the monolith had direct file path references between skills, the split uses stubs and soft refs. Run `sync-stubs.sh` after editing canonical skills.
+- **Project data is unchanged.** The 28-file JSON store, extraction pipeline, and project memory (CLAUDE.md) are identical. No data migration needed.
 
-This intelligence is used by every command in the system:
+### What Stayed Local
 
-- `/log` resolves sub names, fills in grid lines, adds spec references
-- `/daily-report` enriches narratives with locations, thresholds, hold points
-- `/look-ahead` maps activities to subs, materials, and weather constraints
-- `/prepare-rfi` auto-fills drawing and spec references
-- `/submittal-review` pulls spec requirements for compliance checking
-- `/material-tracker` verifies deliveries against spec requirements
-- `/schedules` generates formatted trade schedules from extracted data
-- `/morning-brief` checks weather against thresholds, flags upcoming deliveries
+The `plugins/` directory still contains 4 **Claude Code-only dev plugins** that are NOT part of the marketplace and NOT for Cowork:
 
-The more documents you upload, the smarter everything gets.
+| Plugin | Purpose |
+|--------|---------|
+| foremanos-stack | Prisma 6.7, NextAuth RBAC, Redis caching, SWR fetching, Trigger.dev task patterns |
+| foremanos-llm | Multi-provider LLM orchestration, vision pipeline, RAG system, prompt patterns |
+| foremanos-testing | Vitest patterns, API route testing, `/test-coverage-report` command |
+| foremanos-documents | PDF generation (react-pdf/pdf-lib/pdfkit), Office docs, R2 file storage |
 
-## Project Memory (CLAUDE.md)
+These are development-time skills for the ForemanOS Next.js application codebase. They require Claude Code's execution environment and will cause sandbox mount errors if installed in Cowork.
 
-Foreman_OS generates a `CLAUDE.md` file in your project directory that serves as working memory across sessions. It contains a snapshot of your project basics, current status, key intelligence, active issues, and available commands. This file is auto-updated whenever project data changes, so Claude always knows where things stand when you start a new conversation.
+## Repository Structure
 
-## Skills
-
-The plugin includes forty-two specialized skills:
-
-### Document & Data Skills
-- **document-intelligence** — Three-pass document classification and extraction pipeline with exhaustive content capture, document register, transmittal tracking, RCP extraction, specification conflict detection, quantity validation workflows, and schedule-to-field automation
-- **document-annotation** — PDF markup and annotated document production — plan redlines, spec highlighting, photo callouts, RFI markup packages, as-built annotations with discipline color coding and standard construction markup conventions
-- **project-data** — Data backbone for storage, cross-referencing, versioning, validation, and smart retrieval across the multi-file data store
-- **project-data-intel** — Project data intelligence dashboard with 40+ browsable sections covering spatial, financial, and specification data
-- **quantitative-intelligence** — Bridges measurement sources (DXF, visual analysis, takeoff, text) with the project data store for quantities, assembly chains, sheet cross-references, estimate-to-field reconciliation, and assembly chain cost awareness
-
-### Report Generation Skills
-- **daily-report-format** — Core report generation with language standardization, photo intelligence, and template formatting
-- **weekly-report-format** — Daily report aggregation into professional owner/PM weekly summaries
-- **report-qa** — Post-generation quality check against project intelligence (daily and weekly QA checks)
-- **photo-documentation** — AI-powered photo classification via Gemini Vision with auto-categorization, metadata tagging, and progress tracking
-
-### Field Operations Skills
-- **intake-chatbot** — Conversational field data classification, entity resolution, and proactive prompting
-- **field-reference** — Construction field knowledge base with 21 reference documents covering equipment selection, concrete (standard and advanced), structural steel, earthwork, BMPs, MEP coordination, fire protection, building envelope, site logistics, formwork/shoring, scaffolding, masonry, waterproofing, underground utilities, paving/flatwork, crane lift planning, surveying, temporary facilities, multi-story coordination, and cross-trade coordination
-- **closeout-commissioning** — Project closeout tracking, ASHRAE Guideline 0 commissioning, functional performance testing, BAS commissioning, TAB procedures, system startup sequences, and warranty management
-- **safety-management** — Safety management system with incident tracking, OSHA 300/300A/301 reporting, toolbox talks, JSA/JHA creation, and safety KPIs
-
-### Planning & Tracking Skills
-- **look-ahead-planner** — Schedule-to-daily-breakdown mapping with sub, location, material, and weather resolution
-- **last-planner** — Last Planner System (LPS) with weekly commitments, PPC tracking, constraint analysis, variance tracking, schedule recovery/compression, forensic schedule analysis, and DCMA 14-point assessment
-- **project-dashboard** — Interactive HTML dashboard with Weekly/Project tabs and data chat
-- **inspection-tracker** — Inspection scheduling, result logging, permit tracking, and safety incident investigation with OSHA recordkeeping
-- **punch-list** — Punch list item tracking from identification through completion with back-charge management
-- **delay-tracker** — Delay tracking with excusable/compensable classification, critical path analysis, time impact analysis, forensic documentation, concurrent delay identification, and contract extension documentation
-- **sub-performance** — Subcontractor performance scorecards across 5 weighted dimensions (schedule, quality, safety, responsiveness, professionalism) with pre-qualification criteria and bid evaluation
-
-### Procurement & Document Skills
-- **material-tracker** — Full-lifecycle material management with delivery verification, cert tracking, and vendor database
-- **change-order-tracker** — Change order tracking with T&M tag management, field sign-off workflow, and cost/schedule impact analysis
-- **submittal-intelligence** — Spec requirement extraction, compliance matrix generation, and review comment drafting
-- **rfi-preparer** — Auto-populated RFI and transmittal templates with intelligent drawing/spec reference resolution
-- **meeting-minutes** — Meeting recording, action item tracking, and .docx generation for OAC and coordination meetings
-- **drawing-control** — Drawing revision control with ASI processing, current set verification, and field audit tracking
-
-### Contract, Risk & Claims Skills
-- **contract-administration** — AIA/ConsensusDocs contract field guide, bond types, insurance (OCIP/CCIP/GL/builder's risk), mechanics lien law, indemnification, COI verification, dispute resolution, and subcontractor default procedures
-- **risk-management** — Proactive risk identification with 5x5 probability/impact matrix, risk register, construction-specific risk categories, mitigation strategies, contingency management, weather/force majeure documentation, and monthly risk reviews
-- **claims-documentation** — Contemporaneous record standards, photo/video evidence protocols, schedule/cost impact documentation, notice letter generation, Eichleay formula, concurrent delay analysis, claims package assembly, and mediation/arbitration preparation
-- **environmental-compliance** — LEED v4.1 construction credits, SWPPP administration, hazardous materials (asbestos/lead/mold), waste diversion tracking, dust/air quality management, noise ordinance compliance, and environmental incident response
-
-### Cost & Financial Skills
-- **cost-tracking** — Project cost management with budget structure, CPI/EAC/variance analysis, and cash flow projections
-- **earned-value-management** — EVM with S-curve visualization, SPI/CPI calculation, and project performance forecasting
-- **pay-application** — AIA G702/G703 pay application management with schedule of values, retainage, four lien waiver types, and overbilling detection
-- **labor-tracking** — Per-worker and crew labor tracking with productivity metrics, certified payroll, and EVM cost integration
-- **estimating-intelligence** — Deep estimating knowledge base with unit cost structure, assembly-based estimating, CSI MasterFormat cost coding, quantity takeoff methods, productivity rate tables, T&M pricing verification, bid review/leveling, and value engineering
-
-### Quality & Compliance Skills
-- **quality-management** — Quality Management System (QMS) with three-phase inspection checklists (pre-install, install, post-install) organized by CSI division
-- **cobie-export** — COBie v2.4 facility handover export with 18 standard worksheets mapped from project intelligence
-
-### BIM & Coordination Skills
-- **bim-coordination** — BIM execution plan, clash detection workflows, model-to-field verification, 4D scheduling, laser scanning/point clouds, drone surveys, digital twin concepts, and LOD specifications
-
-### Visualization Skills
-- **rendering-generator** — AI architectural rendering generation with comprehensive prompt engineering from project data and visual context
-- **project-visual-context** — Visual context gathering for AI renderings including site context, design intent, and material selections
-- **image-generation-mcp** — MCP server implementation for AI image generation using Flux 2, Google Gemini, and SVG tools
-
-### CAD & DWG Skills
-- **dwg-extraction** — AutoCAD DWG file extraction pipeline: compiles libredwg from source, converts DWG to DXF, and parses all entity types (survey points, utility structures, contours, property boundaries, construction keynotes, grading data) into structured project intelligence in plans-spatial.json
-
-## Agents
-
-The plugin includes eleven autonomous agents that monitor, analyze, and advise across the project intelligence data store. Agents are auto-discovered from the `agents/` directory.
-
-| Agent | Role |
-|-------|------|
-| **superintendent-assistant** | Top-level assistant that routes requests to the appropriate specialized agent, coordinates multi-agent workflows, and handles general project questions |
-| **data-integrity-watchdog** | Validates consistency across all 28 project intelligence JSON files — detects orphans, cross-file conflicts, schema gaps, staleness, and broken reference chains |
-| **project-health-monitor** | Evaluates 11 KPIs and 5 anomaly detection rules to generate health alerts and trend analysis |
-| **dashboard-intelligence-analyst** | Generates project dashboard summaries, executive briefings, and narrative health reports by querying across all 28 JSON files |
-| **project-data-navigator** | Translates natural language questions from superintendents into structured data queries across the 28-file project intelligence store |
-| **deadline-sentinel** | Monitors all project deadlines across schedule milestones, submittal due dates, RFI response windows, procurement lead times, inspection prerequisites, and contract notice periods |
-| **report-quality-auditor** | Automatically reviews daily and weekly reports for completeness, consistency, and accuracy against the full project data store |
-| **field-intelligence-advisor** | Provides contextual field intelligence by pulling together relevant data from across the project store to support real-time superintendent decisions |
-| **weekly-planning-coordinator** | Orchestrates the weekly lookahead planning cycle using Last Planner System principles — constraint analysis, PPC tracking, and weekly work plan generation |
-| **doc-orchestrator** | Coordinates multi-document extraction runs, validates extraction output, and ensures data quality after processing |
-| **conflict-detection-agent** | Scans for cross-discipline discrepancies across plans, specs, schedules, and field data using 25 detection rules across 8 conflict categories |
-
-## Files
-
-The plugin creates these files in your working directory:
-
-**Project Intelligence (Multi-File Data Store):**
-- `project-config.json` — Project basics, report tracking, folder mapping, documents loaded, version history
-- `plans-spatial.json` — Grid lines, building areas, floor levels, room schedule, site layout, sheet cross-references, quantities, site utilities
-- `specs-quality.json` — Spec sections, key materials, weather thresholds, hold points, tolerances, contract, safety, SWPPP, geotechnical, mix designs
-- `schedule.json` — Milestones, critical path, near-critical, weather-sensitive activities, long-lead items, material requirements by activity, lookahead history
-- `directory.json` — Subcontractors, subcontractor assignments, vendor database, owner reports
-
-**Document & Issue Tracking:**
-- `rfi-log.json` — RFI entries with status, references, responses, schedule impact
-- `submittal-log.json` — Submittal entries with review status, compliance, lead times
-- `procurement-log.json` — Procurement tracking and delivery records
-- `change-order-log.json` — Change order entries with cost/schedule impacts
-- `inspection-log.json` — Inspection records, permit tracking, and re-inspection management (inspection_log and permit_log arrays)
-- `meeting-log.json` — Meeting notes and action items
-- `punch-list.json` — Punch list items with status, priority, and back-charge tracking
-- `delay-log.json` — Delay records with classification, critical path analysis, and claims documentation
-- `drawing-log.json` — Drawing revision control, ASI tracking, and current set status
-
-**Financial & Labor:**
-- `pay-app-log.json` — Pay application history with schedule of values and retainage
-- `cost-data.json` — Budget structure, cost tracking, variance analysis, and cash flow
-- `labor-tracking.json` — Worker/crew time tracking, productivity metrics, and certified payroll
-
-**Quality:**
-- `quality-data.json` — First-pass inspection results, material test records, equipment data, warranty tracking, and system test results
-
-**Safety, Risk & Closeout:**
-- `closeout-data.json` — Closeout tracking, commissioning status, and warranty management
-- `safety-log.json` — Safety incidents, OSHA records, toolbox talks, and corrective actions
-- `risk-register.json` — Risk entries with probability/impact scoring, mitigation plans, and contingency tracking
-- `claims-log.json` — Claims documentation, notice records, evidence tracking, and claims packages
-- `environmental-log.json` — LEED credits, SWPPP compliance, waste diversion, hazmat incidents
-- `annotation-log.json` — Document annotations, markup history, and distribution tracking
-
-**Visualization:**
-- `visual-context.json` — Site context, design intent, and material selections for AI rendering
-- `rendering-log.json` — Generated rendering history and prompt records
-
-**Report History & Context:**
-- `daily-report-data.json` — Structured report history (the "project memory")
-- `daily-report-intake.json` — Running intake log for the current day
-- `CLAUDE.md` — Project working memory for session continuity
+```
+foreman-os/
+  .claude-plugin/
+    marketplace.json           -- Marketplace manifest (lists all 7 plugins)
+  foremanos-core/              -- Core plugin (install first)
+    commands/
+    skills/
+    agents/
+  foremanos-intel/             -- Document intelligence plugin
+    commands/
+    skills/
+    agents/
+  foremanos-field/             -- Field operations plugin
+    commands/
+    skills/
+    agents/
+  foremanos-planning/          -- Planning & scheduling plugin
+    commands/
+    skills/
+    agents/
+  foremanos-doccontrol/        -- Document control plugin
+    commands/
+    skills/
+    agents/
+  foremanos-cost/              -- Cost & financial plugin
+    commands/
+    skills/
+    agents/
+  foremanos-compliance/        -- Risk & compliance plugin
+    commands/
+    skills/
+    agents/
+  plugins/                     -- 4 Claude Code-only dev plugins (not in marketplace)
+  sync-stubs.sh                -- Sync stub SKILL.md files across plugins
+  CLAUDE.md                    -- Repository-level developer guide
+  README.md                    -- This file
+```

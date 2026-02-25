@@ -1,0 +1,6 @@
+{
+  "name": "foremanos-core",
+  "version": "5.0.0",
+  "description": "Project setup, data browsing, dashboards, morning briefings, rendering, and site context. Install first — backbone for all ForemanOS plugins.",
+  "author": { "name": "Miles Goodman" }
+}
