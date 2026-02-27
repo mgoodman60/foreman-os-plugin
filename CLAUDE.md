@@ -65,7 +65,7 @@ plugins/                        -- 4 Claude Code-only dev plugins (NOT in market
 sync-stubs.sh                   -- Syncs stub SKILL.md files from canonical sources
 ```
 
-**Totals across the 7 marketplace plugins:** 39 commands, 42 full skills, 13 stubs, 11 agents.
+**Totals across the 7 marketplace plugins:** 40 commands, 43 full skills, 13 stubs, 11 agents.
 
 ## Architecture
 
