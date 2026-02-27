@@ -13,7 +13,7 @@ Display the full ForemanOS plugin ecosystem with descriptions, command mappings,
 | Plugin | Description | Commands |
 |--------|-------------|----------|
 | **foremanos-core** | Project setup, data browsing, dashboards, morning briefings, rendering, and site context. Install first — backbone for all ForemanOS plugins. | `/set-project`, `/data`, `/morning-brief`, `/dashboard`, `/render`, `/site-context`, `/foremanos` |
-| **foremanos-intel** | Extract intelligence from construction plans, specs, schedules, and contracts. Three-pass extraction, DWG/DXF parsing, quantitative takeoffs. | `/process-docs`, `/process-dwg` |
+| **foremanos-intel** | Extract intelligence from construction plans, specs, schedules, and contracts. 5-phase adaptive extraction, DWG/DXF parsing, quantitative takeoffs. | `/process-docs`, `/process-dwg` |
 | **foremanos-field** | Daily reporting, safety, quality, inspections, labor tracking, and punch lists. Includes 21 field-reference trade guides. | `/log`, `/daily-report`, `/amend-report`, `/safety`, `/quality`, `/inspections`, `/labor`, `/punch-list` |
 | **foremanos-planning** | Scheduling, look-aheads, Last Planner System, weekly reports, material tracking, and meeting minutes. | `/look-ahead`, `/plan`, `/schedules`, `/weekly-report`, `/material-tracker`, `/meeting-notes` |
 | **foremanos-doccontrol** | RFI preparation, submittal reviews, drawing control, document annotation, and BIM coordination. | `/prepare-rfi`, `/submittal-review`, `/drawings`, `/annotate`, `/bim` |

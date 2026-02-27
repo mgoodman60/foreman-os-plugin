@@ -2,6 +2,32 @@
 
 Standard QA checklist for every page of a construction plan set. Run ALL sections against every page — do not skip sections based on assumed discipline.
 
+## Usage Context
+
+This checklist supports two modes depending on the extraction phase:
+
+### Quick Scan (Phase 1 — Index & Classify)
+During Phase 1, use only these 5 items to rapidly classify and index each page:
+1. **Sheet number** — Identify the sheet designation (e.g., A101, C-001, S-201)
+2. **Title** — Read the sheet title from the title block
+3. **Discipline** — Classify: Architectural, Civil, Structural, Mechanical, Electrical, Plumbing, Fire Protection, General
+4. **Grid labels** — Note column/row grid designations visible on the page
+5. **Room names** — List any room names/numbers visible (if architectural)
+
+This produces the sheet index and document classification needed to build the batch plan.
+
+### Full Checklist (Phase 2 — Extract)
+During Phase 2 deep extraction, use the complete checklist below. Apply adaptive intensity:
+- **Critical pages** (floor plans, site plans, schedules): All checklist items
+- **Detail pages** (wall sections, details): Items relevant to the detail type
+- **Cover/index pages**: Quick Scan items only (already captured in Phase 1)
+
+---
+
+## Full Checklist — Phase 2 Deep Extraction
+
+*Apply all items below during Phase 2 batch extraction. For Phase 1 indexing, use the Quick Scan subset above.*
+
 ---
 
 ## A. Sheet Identification (every page)

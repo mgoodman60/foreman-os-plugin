@@ -1,6 +1,6 @@
 {
   "name": "foremanos-intel",
-  "version": "5.0.0",
-  "description": "Extract intelligence from construction plans, specs, schedules, and contracts. Three-pass extraction, DWG/DXF parsing, quantitative takeoffs.",
+  "version": "6.0.0",
+  "description": "Extract intelligence from construction plans, specs, schedules, and contracts. 5-phase adaptive extraction with Claude Vision primary, batch-by-category processing, hook-based guardrails, DWG/DXF parsing, quantitative takeoffs.",
   "author": { "name": "Miles Goodman" }
 }

@@ -210,6 +210,18 @@ Link extracted data across documents:
 - Grid C-3 footing (foundation plan) → 4,500 PSI concrete (structural notes) → Spec 03 30 00
 - PEMB erection (schedule) → Alexander Construction (sub list) → SC-825021-06 (contract)
 
+### Merge Strategy — Append-Only
+
+When extracting data that may overlap with existing records:
+- **Never overwrite** existing data with new extraction results
+- **Append new records** alongside existing ones
+- **Flag conflicts** when new data contradicts existing data (log to `action-items.json` for PM review)
+- **Preserve provenance**: Every record tracks its source document, page, and extraction phase
+- Old data preserved with `"superseded_by"` reference when revised documents arrive
+- PM confirms before old data is archived
+
+This prevents data loss from re-extraction and ensures human review of discrepancies.
+
 ---
 
 ## Quality and Confidence
@@ -495,19 +507,18 @@ This file provides the framework. For detailed extraction rules by category, see
 ### [Visual Plan Analysis](visual-extraction-reference.md)
 **When to use**: Processing plan sheet PDFs as images (complements text-based extraction)
 
+**Visual extraction method priority:**
+1. **Claude Vision (primary)** — Always available, no dependencies. Render page to 300 DPI PNG via PyMuPDF, then analyze with Claude's native multimodal capability. Handles room labels, dimensions, symbols, material zones, notes, and spatial relationships in a single pass.
+2. **Tesseract OCR (supplement)** — Use alongside Claude Vision for small text that benefits from dedicated OCR (fine-print notes, dense dimension strings, title block fields).
+3. **Python CV pipeline (optional enhancement)** — `visual_plan_analyzer.py` with OpenCV for precise coordinate extraction, line detection, and material zone quantification. Not required for standard extraction; use when exact pixel coordinates or automated area calculations are needed.
+
 **Contains**:
-- 7-pass visual extraction pipeline (layout → OCR → lines → symbols → materials → dimensions → scale)
-- PaddleOCR text extraction with construction text type classification (room labels, dimensions, notes, title block)
-- Line detection and classification (walls, grid lines, dimension lines, leaders, section cuts)
-- Construction symbol recognition (doors, outlets, fixtures, fire protection, markers)
-- Material zone detection via texture analysis (Gabor filters, LBP — concrete, VCT, tile, insulation)
-- Dimension extraction (pairs OCR text with dimension line endpoints)
+- Claude Vision analysis checklist (layout, text, symbols, materials, dimensions, scale, cross-references)
+- Tesseract OCR for supplemental small-text extraction
+- Optional Python CV pipeline (OpenCV line detection, symbol recognition, material zone texture analysis)
 - Scale calibration (graphic scale bars and text-format scales like 1/4" = 1'-0")
-- Claude Vision validation layer (post-pipeline QA using native multimodal capability)
-- Optional Gemini 2.5 Pro batch validation (for bulk plan set processing)
 - Accuracy expectations by extraction type (OCR 85-95%, walls 80-90%, symbols 70-85%)
 - Integration rules: merge visual results with text/DXF data, source attribution, conflict resolution
-- visual_plan_analyzer.py pipeline script (PaddleOCR + OpenCV, outputs JSON)
 - symbol_templates/ directory for template matching customization
 
 ### [Material Testing Reports Deep Extraction](material-testing-extraction.md)
@@ -587,22 +598,37 @@ This file provides the framework. For detailed extraction rules by category, see
 
 ---
 
-## Extraction Workflow
+## Extraction Workflow — 5-Phase Adaptive Model
 
-For comprehensive extraction from a document set:
+Extraction follows a 5-phase pipeline. Each phase has distinct entry/exit criteria and validation gates.
 
-1. **File type detection** (Pass 0) — Route .dxf/.dwg to spatial pipeline, .pdf to text + visual
-2. **Classify** all documents (Pass 1 + 2)
-3. **Read specialized references** based on document types found
-4. **Extract in priority order** (plans → specs → schedule → contract → support)
-5. **Visual analysis** (Pass 4) — For plan sheet PDFs, convert to 300 DPI PNG and run `visual_plan_analyzer.py`
-6. **Merge results** — Combine text extraction, visual analysis, and DXF data with source attribution
-7. **Cross-reference** data across documents
-8. **Validate** — Use Claude Vision to spot-check high-value extractions (room counts, equipment, symbols)
-9. **Track coverage** (what was populated, what's missing, what needs vision)
-10. **Flag low-confidence** items for user verification
-11. **Structure output** for project-data storage
-12. **Report results** with metrics and confidence levels
+### Phase 1 — Index & Classify
+- Title blocks, sheet index, document classification, dependency graph
+- Lightweight processing (text only)
+- **Validation**: Schema validation only
+
+### Phase 2 — Extract
+- Structured data extraction, adaptive intensity per page (2-6 passes based on content density)
+- Inline gleaning + batch consistency validation
+- Tentative entity IDs assigned (finalized in Phase 3)
+- **Validation**: Inline gleaning + batch consistency
+
+### Phase 3 — Cross-Reference
+- Entity resolution (tentative IDs → canonical IDs), bidirectional linking, reference graph validation
+- Medium intensity (LLM-assisted comparison across documents)
+- **Validation**: Reference integrity + entity consistency
+
+### Phase 4 — Remediate
+- Targeted re-extraction of items flagged by Phase 2-3 validation
+- Only flagged items are reprocessed (not full re-extraction)
+- **Validation**: Before/after comparison
+
+### Phase 5 — Normalize
+- N1-N8 normalization patterns via `/data-health fix`, computed fields, final confidence scoring
+- Deterministic (scripted, no LLM required)
+- **Validation**: Full-corpus consistency
+
+> **Reference**: `commands/process-docs.md` Step 3 for complete phase definitions, entry/exit criteria, and processing refinements.
 
 ---
 

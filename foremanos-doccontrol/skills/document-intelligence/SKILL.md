@@ -53,24 +53,27 @@ This skill transforms raw construction documents into structured, actionable pro
 
 ## Core Capabilities
 
-### 1. Three-Pass Extraction System
+### 1. Extraction Pipeline (5-Phase Adaptive Model)
 
-#### Pass 1: Metadata Extraction (Automatic)
-Before reading content, extract PDF metadata:
-- Creator application (signals document type)
-- Creation/modification dates
-- Page count
-- Title, author, subject
+This extraction system uses a 5-phase adaptive model. The phases below (Phase 1-2) cover the per-document extraction methodology. Cross-referencing (Phase 3), remediation (Phase 4), and normalization (Phase 5) are orchestrated at the pipeline level — see `commands/process-docs.md` for the full pipeline and `agents/extraction-pipeline-orchestrator.md` for the meta-agent.
 
-#### Pass 2: Structural Analysis (Quick Scan)
-Scan for structural patterns:
-- Sheet index (for drawings)
-- Table of contents (for specs)
-- Headers, footers, tables
-- Content signals for classification
+#### Phase 1 — Index & Classify (Lightweight)
+For each document, extract metadata and classify:
+- PDF metadata: creator application, dates, page count, title, author
+- Document type classification (see `doc-orchestrator.md` classification table)
+- For plan PDFs: build sheet index from TOC or title blocks
+- For specs: identify division/section structure
 
-#### Pass 3: Deep Content Extraction (Targeted)
-Based on document type, extract comprehensive intelligence following specialized references.
+#### Phase 2A — Structural Analysis (Quick Scan)
+Scan for structural patterns to guide extraction:
+- Sheet index (for drawings), Table of contents (for specs)
+- Headers, footers, tables, content signals
+- Adaptive intensity: cover sheets get 2 passes, plan sheets get 4-6
+
+#### Phase 2B — Deep Content Extraction (Targeted)
+Based on document type, extract comprehensive intelligence following specialized references in `extraction-rules.md`.
+
+**Entity resolution during extraction:** Assign tentative entity references using `directory.json` and `specs-quality.json` as lookup tables. Mark as `"entity_status": "tentative"`. These are confirmed in Phase 3 (Cross-Reference) at the pipeline level.
 
 #### Pass 4: Visual / Graphical Analysis (Plan Sheets and Drawings)
 
@@ -82,24 +85,36 @@ Based on document type, extract comprehensive intelligence following specialized
 3. Extract: scale data (per-view), dimension strings, detail callouts, room labels with grid locations, door swings, equipment locations, general notes, title block data, north arrow
 4. Store with `"source": "claude_vision"` and `"confidence": "medium"`
 
-**Method 2 — Python Visual Pipeline (Enhanced, when dependencies available):**
-If `cv2`, `skimage`, `sklearn` are installed, also run `visual_plan_analyzer.py` for automated extraction:
-- OCR text extraction (room labels, dimensions, notes, title block data)
-- Wall/line detection and classification (walls, grids, dimension lines)
-- Construction symbol recognition (doors, outlets, fixtures, markers)
+**Method 2 — Python Visual Pipeline (Optional Enhancement):**
+If `cv2`, `skimage`, `sklearn` are installed, optionally run `visual_plan_analyzer.py` for automated extraction with precise pixel coordinates:
+- OCR text extraction, wall/line detection, symbol recognition
 - Material zone detection (hatches → concrete, VCT, tile, insulation)
 - Dimension extraction (pairing OCR text with dimension lines)
 - Scale calibration (graphic scale bars AND text-format scales)
-Falls back to OpenCV + Tesseract if PaddleOCR is unavailable.
+Falls back to OpenCV + Tesseract if PaddleOCR is unavailable. **This pipeline is not required** — Claude Vision handles the majority of extraction needs.
 
-**Method 3 — Tesseract OCR (Always available):**
+**Method 3 — Tesseract OCR (Supplement for small text):**
 Supplement small text that Claude Vision misses: `tesseract sheet.png output -l eng --psm 6`
 
-**Priority:** Claude Vision (baseline + validation) > Python pipeline (precise coordinates) > Tesseract (text supplement)
+**Priority:** Claude Vision (primary, always available) > Tesseract (text supplement) > Python pipeline (optional precise coordinates)
 
-#### Pass 4A: Scale Calibration Protocol (REQUIRED before any measurement)
+**DPI Recipes:**
 
-**Scale calibration MUST be completed before extracting dimensions, areas, or any measurement data from a sheet.** Without a calibrated scale, pixel-based measurements are meaningless. This sub-pass runs as the FIRST step of Pass 4 for every plan sheet.
+| Document Type | DPI | Notes |
+|--------------|-----|-------|
+| D-size drawings (24x36, 30x42) | 150 | Crop to 1800x1200 for Vision |
+| Letter-size PDFs (specs, submittals) | 200 | Standard rendering |
+| High-detail areas (enlarged plans, details) | 300-350 | Zone crop specific areas |
+| Text-extractable PDFs (contracts, reports) | Skip | Extract text directly, no rendering |
+
+**Atomic Python Script Pattern:**
+When updating multiple JSON files from extraction, use a single atomic script: read all targets → modify in memory → write all → print summary. This prevents partial writes and ensures consistency. See `commands/process-docs.md` for the code template.
+
+#### Phase 2C: Scale Calibration Protocol (RECOMMENDED, non-blocking)
+
+**Scale calibration is RECOMMENDED before extracting measurement data from a sheet.** It improves dimensional accuracy but is **non-blocking** — if calibration fails, record `"scale_status": "uncalibrated"` and continue extraction. Text-based data (room names, door marks, notes, equipment tags) is extracted regardless. Uncalibrated sheets are flagged for remediation in Phase 4.
+
+Without a calibrated scale, pixel-based measurements are unreliable. This sub-pass runs as the FIRST step of visual analysis for every plan sheet.
 
 **Step 1 — Graphic Scale Bar Detection (Highest Priority):**
 
@@ -220,12 +235,12 @@ Every plan sheet must have scale data recorded in `plans-spatial.json` under `sc
 ```
 
 **If scale calibration fails for a sheet** (no graphic bar, no text scale, no readable dimensions):
-- Record `"calibration_method": "none"`, `"confidence": "failed"`
-- Flag the sheet for manual review: "Sheet X-XXX: Scale calibration failed — superintendent should confirm scale"
-- Do NOT attempt pixel-based measurements on uncalibrated sheets
-- Text-based data (room names, door marks, notes) can still be extracted without scale
+- Record `"calibration_method": "none"`, `"scale_status": "uncalibrated"`, `"confidence": "failed"`
+- Flag the sheet for Phase 4 remediation (re-attempt with different method or manual review)
+- **Continue extraction** — text-based data (room names, door marks, notes, equipment tags, general notes) can still be extracted without scale
+- Pixel-based measurements on uncalibrated sheets should be marked with `"confidence": "low"` and `"uncalibrated": true`
 
-Without scale data, quantity calculations and dimensional verification are impossible. **A sheet with failed scale calibration is NOT fully processed** — flag it and move on.
+Uncalibrated sheets reduce the extraction depth score but do not block the pipeline. They are queued for targeted remediation in Phase 4.
 
 #### Pass 4B: Dimension String Chaining and Verification
 
@@ -1049,3 +1064,22 @@ When the user asks to see extracted project data ("show me the project intellige
 ---
 
 > **Extended reference**: Detailed examples, templates, scoring rubrics, and best practices are in `references/skill-detail.md`.
+
+---
+
+## Extraction Hooks (Optional)
+
+Four Node.js hooks in `foremanos-intel/hooks/` provide automated quality guardrails during extraction. They run locally (~12ms each, zero API calls) and never block writes — only warn on stderr.
+
+| Hook | Trigger | What It Does |
+|------|---------|-------------|
+| `project-brain-validator.js` | PreToolUse (Write\|Edit) | Validates JSON structure, canonical top-level keys, catches empty overwrites |
+| `counter-reconciler.js` | PostToolUse (Write) | Checks `_count` fields match actual array lengths |
+| `extraction-checkpoint.js` | PreCompact | Saves extraction phase/progress before context compaction |
+| `data-loss-guard.js` | PreToolUse (Write) | Warns if new content has fewer records than existing file |
+
+See `commands/process-docs.md` "Extraction Hooks" section for installation instructions.
+
+### MCP Tool Integration
+
+Optional MCP server tools enhance the extraction pipeline when available. See `references/mcp-extraction-tools.md` for the full reference including PDF Tools (Phase 1 classification), PDF Display (Phase 3-4 PM review), Cloudflare D1 (extraction state persistence for 100+ doc projects), and R2 (render archive).

@@ -6,6 +6,8 @@ argument-hint: [filename.dwg]
 
 Process AutoCAD DWG files (.dwg) to extract survey points, utility structures, contours, property data, erosion control keynotes, and grading information. Converts DWG to DXF via libredwg, then parses all entity types into structured project data.
 
+> **Integration Note**: DWG extraction integrates with the 5-phase adaptive extraction model. DWG files are classified in Phase 1 alongside PDFs, extracted in parallel with PDF batches during Phase 2, and reconciled via dual-source Pattern 7 in Phase 3. See `commands/process-docs.md` Step 3 for the full pipeline.
+
 Read the dwg-extraction skill at `${CLAUDE_PLUGIN_ROOT}/skills/dwg-extraction/SKILL.md` and the project-data skill at `${CLAUDE_PLUGIN_ROOT}/skills/project-data/SKILL.md` before proceeding. After extraction is complete, read the doc-orchestrator agent at `${CLAUDE_PLUGIN_ROOT}/agents/doc-orchestrator.md` to validate extraction output and ensure data quality.
 
 ## Step 1: Locate the DWG File
@@ -48,6 +50,8 @@ Review the parser output summary for entity counts and extraction results.
 
 ## Step 5: Deep Analysis
 
+**DPI guidance**: D-size drawings at 150 DPI, detail sheets at 300 DPI.
+
 After the automated parser runs, perform additional manual analysis on the DXF data:
 
 1. **Survey Point Deduplication** — Remove duplicate points (same XYZ within 0.01 ft tolerance)
@@ -84,3 +88,5 @@ Report:
 - Layer count and category breakdown
 - Any cross-references with existing project data (e.g., RFI field measurements)
 - Data sections loaded into plans-spatial.json
+
+After DWG extraction completes, run `/data-health scan` to validate the extracted data and check for dual-source conflicts with any PDF-extracted data.

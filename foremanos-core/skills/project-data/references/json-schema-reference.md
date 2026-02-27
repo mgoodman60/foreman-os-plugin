@@ -54,15 +54,49 @@ Master configuration — project identity, folder paths, document tracking, and 
 | `sc_po_log` | string | Full path to SC/PO Log spreadsheet | `/set-project` | `material-tracker` |
 
 ### `documents_loaded`
+
+Organized in 5 tiers. Tier 1 is always required. Tiers 2-5 are populated progressively by the 5-phase adaptive extraction pipeline.
+
+**Tier 1 — Core (always required):**
 | Field | Type | Description | Producers | Consumers |
 |-------|------|-------------|-----------|-----------|
 | `filename` | string | Document file name | `/process-docs` | — |
-| `type` | string | Document type (plans, specs, etc.) | `/process-docs` | — |
+| `type` | string | Document type (plans, specs, schedule, etc.) | `/process-docs` | `doc-orchestrator` |
 | `discipline` | string | A/S/M/E/P/C discipline code | `/process-docs` | — |
 | `date_loaded` | string | ISO 8601 date of extraction | `/process-docs` | — |
 | `sections_extracted` | array | Which data sections were populated | `/process-docs` | — |
 | `coverage_notes` | string | Extraction quality notes | `/process-docs` | — |
-| `confidence` | string | high/medium/low | `/process-docs` | — |
+| `confidence` | string | high/medium/low | `/process-docs` | `/data-health report` |
+
+**Tier 2 — Batch/Phase Tracking (5-phase model):**
+| Field | Type | Description | Producers | Consumers |
+|-------|------|-------------|-----------|-----------|
+| `id` | number | Sequential entry identifier | `/process-docs` | All |
+| `batch_id` | string | Batch grouping identifier (e.g., "BATCH-001") | `/process-docs` | `extraction-pipeline-orchestrator` |
+| `extraction_phase` | number | Current pipeline phase (1-5) | `/process-docs` | `extraction-pipeline-orchestrator` |
+| `status` | enum | "pending" \| "in_progress" \| "extracted" \| "cross_referenced" \| "validated" | `/process-docs` | `doc-orchestrator` |
+| `entity_status` | enum | "tentative" \| "canonical" \| null | Phase 2-3 | `doc-orchestrator`, Phase 3 resolution |
+
+**Tier 3 — Extraction Metadata:**
+| Field | Type | Description | Producers | Consumers |
+|-------|------|-------------|-----------|-----------|
+| `page_count` | number | Total pages in document | `/process-docs` | — |
+| `file_size` | string | Document file size | `/process-docs` | — |
+| `sheet` | string | Sheet identifier (A101, C-001) for plan pages | `/process-docs` | `quantitative-intelligence` |
+| `extraction_methods` | array | Methods used: text, ocr, claude_vision, zone_crop | `/process-docs` | `doc-orchestrator` |
+
+**Tier 4 — Quality Metrics:**
+| Field | Type | Description | Producers | Consumers |
+|-------|------|-------------|-----------|-----------|
+| `visual_extraction` | boolean | Visual analysis was used | `/process-docs` | `/data-health report` |
+| `scale_data_extracted` | boolean | Scale/dimensions were extracted | `/process-docs` | `quantitative-intelligence` |
+| `scale_calibration_method` | string | How scale was determined (graphic_bar, text_scale, known_dimension, none) | `/process-docs` | — |
+| `scale_calibration_confidence` | number | 0.0–1.0 scale confidence | `/process-docs` | `/data-health report` |
+
+**Tier 5 — Impact Tracking:**
+| Field | Type | Description | Producers | Consumers |
+|-------|------|-------------|-----------|-----------|
+| `data_files_updated` | array | JSON files modified by this extraction | `/process-docs` | `doc-orchestrator`, `/data-health` |
 
 ### `version_history`
 | Field | Type | Description | Producers | Consumers |

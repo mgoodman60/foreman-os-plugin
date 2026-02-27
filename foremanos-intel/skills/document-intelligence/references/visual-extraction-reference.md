@@ -1,5 +1,7 @@
 # Visual Plan Analysis — Extraction Reference
 
+> **Note — Claude Vision Primary (v6.0.0)**: The Python CV pipeline described in this document is now an **optional enhancement**. Claude Vision (multimodal image analysis via the Read tool) is the primary visual extraction method — it's always available, requires no dependencies, and handles most construction document analysis. Tesseract supplements for small-text OCR. Use this reference when you need precise pixel coordinates, automated symbol detection, or batch image processing that benefits from programmatic CV. See `SKILL.md` Section 1 for the current extraction priority order.
+
 Extract construction intelligence from plan sheet images using computer vision and OCR. This is the visual complement to text-based extraction (Phase 5) and DXF spatial extraction (Phase 6), capturing the 80% of plan data communicated through drawings rather than text.
 
 ---

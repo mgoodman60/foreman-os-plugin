@@ -108,7 +108,7 @@ Present findings as:
 ## Important Constraints
 
 - Never suggest downgrading vision/extraction models for construction drawings — accuracy is critical for safety-related information
-- Never suggest removing the three-pass pipeline — it exists for quality assurance
+- Never suggest removing the 5-phase adaptive pipeline — it exists for quality assurance
 - Cache invalidation matters — be cautious about caching extraction results that may need updating
 - The free tier MUST stay on gpt-4o-mini — this is a business requirement
 - Opus for premium/business tiers is a feature differentiator — only suggest downgrades for internal/background tasks

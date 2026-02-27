@@ -200,7 +200,7 @@ Documents (plans, specs, schedule, contracts, sub list, geotech, safety plan...)
 /process-docs or /process-dwg  [foremanos-intel]
     |
     v
-Three-pass extraction pipeline (metadata -> structural analysis -> targeted content)
+5-phase adaptive extraction pipeline (index -> extract -> cross-reference -> remediate -> normalize)
     |
     v
 28-file JSON intelligence store (in project's AI - Project Brain/ directory)

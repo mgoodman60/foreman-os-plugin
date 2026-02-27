@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-This is **foreman-os-marketplace**, a Cowork plugin marketplace containing **7 self-contained ForemanOS plugins** (v5.0.0) for construction superintendents. The monolith has been split so each plugin can be installed independently. The marketplace also includes 4 Claude Code-only dev plugins (not listed in the marketplace).
+This is **foreman-os-marketplace**, a Cowork plugin marketplace containing **7 self-contained ForemanOS plugins** (v6.0.0) for construction superintendents. The monolith has been split so each plugin can be installed independently. The marketplace also includes 4 Claude Code-only dev plugins (not listed in the marketplace).
 
 There is no build system, no tests, no package manager. The entire codebase is markdown files, JSON configs, a stub sync script, and a few Python reference scripts.
 
@@ -173,7 +173,7 @@ There is no monolith entry. There are no dev plugin entries. The dev plugins in 
 
 ## Data Flow
 
-Documents -> `document-intelligence` skill (three-pass extraction) in foremanos-intel -> structured JSON files -> consumed by commands/skills across all 7 plugins.
+Documents -> `document-intelligence` skill (5-phase adaptive extraction) in foremanos-intel -> structured JSON files -> consumed by commands/skills across all 7 plugins.
 
 ### The 28-File Data Store
 
